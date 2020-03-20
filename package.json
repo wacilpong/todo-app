@@ -2,21 +2,11 @@
   "name": "kakaoix-todo",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
-    "@testing-library/user-event": "^7.2.1",
-    "@types/jest": "^24.9.1",
-    "@types/node": "^12.12.30",
-    "@types/react": "^16.9.23",
-    "@types/react-dom": "^16.9.5",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-scripts": "3.4.0",
-    "typescript": "^3.7.5"
-  },
+  "proxy": "http://localhost:55555",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "npm run start:server && npm run start:client",
+    "start:client": "react-scripts start",
+    "start:server": "nodemon ./backend/server.ts",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -35,5 +25,26 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.5.0",
+    "@testing-library/user-event": "^7.2.1",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^12.12.30",
+    "@types/react": "^16.9.23",
+    "@types/react-dom": "^16.9.5",
+    "axios": "^0.19.2",
+    "express": "^4.17.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.0",
+    "typescript": "^3.7.5"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/express": "^4.17.3",
+    "nodemon": "^2.0.2",
+    "ts-node": "^8.7.0"
   }
 }
