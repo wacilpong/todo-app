@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run start:server && npm run start:client",
     "start:client": "react-scripts start",
-    "start:server": "nodemon ./backend/server.ts",
+    "start:server": "nodemon ./backend/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -43,6 +43,7 @@
     "react-redux": "^7.2.0",
     "react-scripts": "3.4.0",
     "redux": "^4.0.5",
+    "sqlite3": "^4.1.1",
     "typescript": "^3.7.5"
   },
   "devDependencies": {
@@ -50,7 +51,6 @@
     "@types/classnames": "^2.2.10",
     "@types/express": "^4.17.3",
     "@types/react-redux": "^7.1.7",
-    "nodemon": "^2.0.2",
-    "ts-node": "^8.7.0"
+    "nodemon": "^2.0.2"
   }
 }
