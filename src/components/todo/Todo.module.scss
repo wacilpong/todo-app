@@ -1,33 +1,50 @@
 @import "~assets/color";
 
 .todo-card {
-  display: flex;
-  align-items: center;
   border: 1px solid $gray;
   border-radius: 2px;
   padding: 10px 5px;
+  margin: 20px 0;
 
-  input[type="checkbox"] {
-    width: 15px;
-    height: 15px;
-  }
+  .card {
+    display: flex;
+    align-items: center;
 
-  span.id {
-    margin: 0 6px;
-  }
+    input.completed {
+      width: 15px;
+      height: 15px;
+    }
 
-  span.todo {
-    text-align: center;
-    flex: 1;
+    .todo {
+      text-align: center;
+      flex: 1;
 
-    &::after {
-      content: attr(data-reference);
-      display: block;
+      &::after {
+        content: attr(data-reference);
+        display: block;
+        font-size: 0.75rem;
+      }
+
+      input {
+        text-align: inherit;
+        width: 100%;
+      }
+    }
+
+    .id {
+      margin: 0 6px;
+    }
+
+    button {
+      padding: 0 6px;
+      font-size: 1.1rem;
+      color: $lightPink;
     }
   }
 
-  button {
-    font-size: 1.1rem;
-    color: $lightPink;
+  .description {
+    color: dimgray;
+    font-size: 0.75rem;
+    margin-top: 6px;
   }
 }

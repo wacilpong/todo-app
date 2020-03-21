@@ -4,9 +4,11 @@
   @media only screen and (min-width: 481px) {
     font-size: 16px;
   }
+
   @media only screen and (max-width: 480px) {
     font-size: 14px;
   }
+
   @media only screen and (max-width: 375px) {
     font-size: 12px;
   }
@@ -21,6 +23,10 @@ button {
   appearance: none;
   outline: none;
   border: none;
+}
+
+input {
+  font-size: 1rem;
 }
 
 button {
