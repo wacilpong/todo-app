@@ -1,0 +1,33 @@
+@import "~assets/color";
+
+.todo-card {
+  display: flex;
+  align-items: center;
+  border: 1px solid $gray;
+  border-radius: 2px;
+  padding: 10px 5px;
+
+  input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+  }
+
+  span.id {
+    margin: 0 6px;
+  }
+
+  span.todo {
+    text-align: center;
+    flex: 1;
+
+    &::after {
+      content: attr(data-reference);
+      display: block;
+    }
+  }
+
+  button {
+    font-size: 1.1rem;
+    color: $lightPink;
+  }
+}

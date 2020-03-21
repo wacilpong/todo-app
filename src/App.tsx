@@ -1,17 +1,15 @@
-import React, { useEffect } from "react";
-import { getTest } from "./services/testService";
+import React from "react";
+import { Add, Todo } from "components";
 
-import "./App.css";
+import "./App.scss";
 
 function App() {
-  useEffect(() => {
-    (async () => {
-      const test = await getTest();
-      console.log(test);
-    })();
-  }, []);
-
-  return <div className="App"></div>;
+  return (
+    <main>
+      <Add />
+      <Todo />
+    </main>
+  );
 }
 
 export default App;
