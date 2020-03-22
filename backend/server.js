@@ -6,6 +6,7 @@ const app = express();
 const port = process.env.PORT || 55555;
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api", api);
 
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+app.listen(port, () => console.log(`Listening on port ${port}!`));

@@ -6,8 +6,11 @@ const dbPath = path.resolve(__dirname, "db/source.db");
 const db = new sqlite3.Database(dbPath, err => {
   if (err) return console.error(err.message);
 
-  console.log("Connected to sqlite");
+  console.log("Connected to sqlite!");
 });
+
+const dropTodoTableQuery = `DROP TABLE IF EXISTS todo`;
+const dropTodoReferenceTableQuery = `DROP TABLE IF EXISTS todo_reference`;
 
 const createTodoQuery = `
   CREATE TABLE IF NOT EXISTS todo(
@@ -15,7 +18,8 @@ const createTodoQuery = `
     contents TEXT,
     createdAt TEXT,
     updatedAt TEXT,
-    isDone INTEGER
+    isDone INTEGER,
+    isDeleted INTEGER DEFAULT 1
     );
 `;
 
@@ -28,18 +32,12 @@ const createTodoReferenceQuery = `
 `;
 
 // const insertTodoReferenceQuery = `
-//   INSERT INTO todo (
-//     contents, createdAt, updatedAt, isDone
-//   ) VALUES (
-//     "This is todo test ~!!!!", "2020-03-21 00:00:00.000", "", 1
-//   );
-// `;
-
-// const insertTodoReferenceQuery = `
 //   INSERT INTO todo_reference VALUES ();
 // `;
 
 db.serialize(() => {
+  db.each(dropTodoTableQuery);
+  db.each(dropTodoReferenceTableQuery);
   db.each(createTodoQuery);
   db.each(createTodoReferenceQuery);
   // db.each(insertTodoReferenceQuery);
