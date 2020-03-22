@@ -1,13 +1,6 @@
-export type ActionType<T = any> = { type: string; payload: T };
-
-export enum EActions {
-  INIT_TODO = "INIT_TODO"
-}
-
-export interface IStore {
-  todo: {
-    currentList: ITodo[];
-  };
+export interface IPromiseSuccess<T> {
+  message?: string;
+  data: T;
 }
 
 export interface IPage {
@@ -22,5 +15,6 @@ export interface ITodo {
   updatedAt: string;
   content: string;
   referenceTodoId: number[];
-  isDone: boolean;
+  isDone: number;
+  isDeleted: number;
 }

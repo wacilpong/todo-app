@@ -1,27 +1,25 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
 import { Add, Todo } from "components";
-// import { initTodo } from "reducers/todo";
-import { IStore } from "types";
+import { getTodo } from "services/todoService";
+import { ITodo } from "types";
 
 import "./App.scss";
 
 function App() {
-  const dispatch = useDispatch();
-  const { currentList } = useSelector<IStore, IStore["todo"]>(
-    ({ todo }) => todo
-  );
+  const [todoList, setTodoList] = useState<ITodo[]>([]);
 
   useEffect(() => {
-    // dispatch(initTodo({ number: 1, size: 5 }));
-  }, [dispatch]);
+    getTodo({ number: 1, size: 5 }).then(({ data }) => {
+      setTodoList(data);
+    });
+  }, []);
 
   return (
     <main>
       <Add />
 
       <section>
-        {currentList.map(data => (
+        {todoList.map(data => (
           <Todo key={data.id} data={data} />
         ))}
       </section>

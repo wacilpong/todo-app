@@ -19,7 +19,7 @@ const createTodoQuery = `
     createdAt TEXT,
     updatedAt TEXT,
     isDone INTEGER,
-    isDeleted INTEGER DEFAULT 1
+    isDeleted INTEGER DEFAULT 0
     );
 `;
 
@@ -31,16 +31,11 @@ const createTodoReferenceQuery = `
   );
 `;
 
-// const insertTodoReferenceQuery = `
-//   INSERT INTO todo_reference VALUES ();
-// `;
-
 db.serialize(() => {
   db.each(dropTodoTableQuery);
   db.each(dropTodoReferenceTableQuery);
   db.each(createTodoQuery);
   db.each(createTodoReferenceQuery);
-  // db.each(insertTodoReferenceQuery);
 });
 
 module.exports = db;

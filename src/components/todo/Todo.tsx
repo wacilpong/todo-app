@@ -62,7 +62,7 @@ export default ({
         <input
           type="checkbox"
           className={cx("completed")}
-          checked={isDone}
+          checked={Boolean(isDone)}
           onChange={updateCompleteTodo}
         />
         <span className={cx("id")}>{id}</span>

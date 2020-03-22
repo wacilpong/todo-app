@@ -17,7 +17,7 @@ router.post("/todo", ({ body: { contents, isDone } }, res) => {
   db.run(STATEMENT, error => {
     if (error) res.status(500).json({ error: error.message });
 
-    res.json({ message: "등록되었습니다." });
+    res.json({ message: "등록되었습니다.", data: {} });
   });
 });
 
@@ -77,7 +77,7 @@ router.patch("/todo/:id", ({ body, params: { id } }, res) => {
   db.run(STATEMENT, error => {
     if (error) res.status(500).json({ error: error.message });
 
-    res.json({ message: "수정되었습니다." });
+    res.json({ message: "수정되었습니다.", data: {} });
   });
 });
 
@@ -94,7 +94,7 @@ router.delete("/todo/:id", ({ params: { id } }, res) => {
       if (error) res.status(500).json({ error: error.message });
     });
 
-    res.json({ message: "삭제되었습니다." });
+    res.json({ message: "삭제되었습니다.", data: {} });
   });
 });
 
@@ -114,7 +114,8 @@ router.post(
       if (error) res.status(500).json({ error: error.message });
 
       res.json({
-        message: `${id}번 todo에 ${referenceTodoId.length}개의 todo가 참조되었습니다.`
+        message: `${id}번 todo에 ${referenceTodoId.length}개의 todo가 참조되었습니다.`,
+        data: {}
       });
     });
   }

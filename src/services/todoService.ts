@@ -1,6 +1,7 @@
 import client from "./client";
-import { ITodo } from "types";
+import { IPromiseSuccess, ITodo, IPage } from "types";
 
 const API_TODO_URL = "/api/todo";
 
-export const getTodo = (): Promise<ITodo[]> => client.get(API_TODO_URL);
+export const getTodo = (params: IPage): Promise<IPromiseSuccess<ITodo[]>> =>
+  client.get(API_TODO_URL, { params });
