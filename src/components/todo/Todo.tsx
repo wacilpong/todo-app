@@ -5,6 +5,7 @@ import React, {
   FocusEvent,
   MouseEvent
 } from "react";
+import { getThisTodo, patchTodo } from "services/todoService";
 import classnames from "classnames/bind";
 import { ITodo } from "types";
 
@@ -21,21 +22,39 @@ export default ({
   data: { id, createdAt, updatedAt, contents, referenceTodoId, isDone },
   getTodoHandler
 }: IProps) => {
+  const boolIsDone = useMemo(() => Boolean(isDone), [isDone]);
   const referenceTodoIdText = useMemo(
     () => referenceTodoId.reduce((acc, id) => `${acc} @${id}`, ""),
     [referenceTodoId]
   );
 
+  const checkValidateReferenceTodo = useCallback(() => {
+    const requests = referenceTodoId.map(referenceId =>
+      getThisTodo(referenceId)
+    );
+
+    return Promise.all(requests).then(responses => {
+      return responses
+        .filter(({ data: { isDone } }) => !Boolean(isDone))
+        .map(({ data: { id } }) => id);
+    });
+  }, [referenceTodoId]);
+
   const updateCompleteTodo = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
+    async (event: ChangeEvent<HTMLInputElement>) => {
       event.persist();
 
-      // TODO: id로 DB에서 isDone 업데이트 -> change이벤트 될 때마다 !isDone 값으로 업데이트
-      // TODO: !isDone === true인 경우, referenceTodoId가 있을 때는 업데이트 불가하도록 안내
-      console.log(id);
-      console.log(event);
+      const invalidateTodo = await checkValidateReferenceTodo();
+
+      if (invalidateTodo.length) {
+        alert(`참조되어 있는 (${invalidateTodo})번 todo를 먼저 완료해주세요.`);
+        return;
+      }
+
+      patchTodo(id, { isDone: !boolIsDone ? 1 : 0 });
+      getTodoHandler();
     },
-    [id]
+    [id, boolIsDone, checkValidateReferenceTodo, getTodoHandler]
   );
 
   const updateContentsTodo = useCallback(
@@ -71,11 +90,15 @@ export default ({
         />
         <span className={cx("id")}>{id}</span>
         <div className={cx("todo")} data-reference={referenceTodoIdText}>
-          <input
-            type="text"
-            defaultValue={contents}
-            onBlur={updateContentsTodo}
-          />
+          {isDone ? (
+            <s>{contents}</s>
+          ) : (
+            <input
+              type="text"
+              defaultValue={contents}
+              onBlur={updateContentsTodo}
+            />
+          )}
         </div>
         <button type="button" onClick={deleteTodo}>
           X

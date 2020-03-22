@@ -48,7 +48,10 @@ router.get("/todo", ({ query: { page = 1, size = 5 } }, res) => {
         if (error3) res.status(500).json({ error: error3.message });
 
         const result = rowsTodo.map(t => {
-          const references = rowsReference.filter(r => r.todoId === t.id);
+          const references = rowsReference
+            .filter(r => r.todoId === t.id)
+            .map(row => row.referenceTodoId);
+
           t.referenceTodoId = references;
           return t;
         });
@@ -72,8 +75,8 @@ router.get("/todo/:id", ({ params: { id } }, res) => {
 router.patch("/todo/:id", ({ body, params: { id } }, res) => {
   let queryCase = "";
 
-  if (body.contents) queryCase = `contents = "${body.contents}"`;
-  if (body.isDone) queryCase = `isDone = ${Number(body.isDone)}`;
+  if (body.contents !== undefined) queryCase = `contents = "${body.contents}"`;
+  if (body.isDone !== undefined) queryCase = `isDone = ${body.isDone}`;
 
   const STATEMENT = `
     UPDATE todo SET
