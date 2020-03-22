@@ -5,7 +5,7 @@ import React, {
   FocusEvent,
   MouseEvent
 } from "react";
-import { getThisTodo, patchTodo } from "services/todoService";
+import { getThisTodo, patchTodo, deleteTodo } from "services/todoService";
 import classnames from "classnames/bind";
 import { ITodo } from "types";
 
@@ -61,22 +61,24 @@ export default ({
     (event: FocusEvent<HTMLInputElement>) => {
       event.preventDefault();
 
-      // TODO: event.target.value가 현재 content랑 다를 때만 DB 업데이트
-      console.log(id);
-      console.log(contents);
-      console.log(event.target.value);
+      if (event.target.value === contents) return;
+
+      patchTodo(id, { contents: event.target.value });
+      getTodoHandler();
     },
-    [id, contents]
+    [id, contents, getTodoHandler]
   );
 
-  const deleteTodo = useCallback(
+  const deleteThisTodo = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
 
-      // TODO: id로 DB에서 삭제
-      console.log(id);
+      deleteTodo(id).then(({ message }) => {
+        alert(message);
+        getTodoHandler();
+      });
     },
-    [id]
+    [id, getTodoHandler]
   );
 
   return (
@@ -100,7 +102,7 @@ export default ({
             />
           )}
         </div>
-        <button type="button" onClick={deleteTodo}>
+        <button type="button" onClick={deleteThisTodo}>
           X
         </button>
       </div>

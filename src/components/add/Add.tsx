@@ -1,4 +1,4 @@
-import React, { ChangeEvent, MouseEvent, useState, KeyboardEvent } from "react";
+import React, { ChangeEvent, useState, KeyboardEvent } from "react";
 import { postTodo } from "services/todoService";
 import classnames from "classnames/bind";
 

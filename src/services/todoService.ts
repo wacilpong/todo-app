@@ -16,5 +16,8 @@ export const patchTodo = (
   data: ITodoParams
 ): Promise<IPromiseSuccess> => client.patch(`${API_TODO_URL}/${id}`, data);
 
+export const deleteTodo = (id: number): Promise<IPromiseSuccess> =>
+  client.delete(`${API_TODO_URL}/${id}`);
+
 export const getThisTodo = (id: number): Promise<IPromiseSuccess<ITodo>> =>
   client.get(`${API_TODO_URL}/${id}`);

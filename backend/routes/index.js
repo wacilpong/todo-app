@@ -92,7 +92,7 @@ router.patch("/todo/:id", ({ body, params: { id } }, res) => {
 });
 
 router.delete("/todo/:id", ({ params: { id } }, res) => {
-  const STATEMENT_UPDATE = `UPDATE todo SET isDeleted = 0 WHERE id == ${id}`;
+  const STATEMENT_UPDATE = `UPDATE todo SET isDeleted = 1 WHERE id == ${id}`;
   const STATEMENT_DELETE = `DELETE FROM todo_reference WHERE referenceTodoId == ${id}`;
 
   db.serialize(() => {
