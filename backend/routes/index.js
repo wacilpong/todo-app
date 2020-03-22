@@ -36,7 +36,7 @@ router.get("/todo", ({ query: { page = 1, size = 5 } }, res) => {
   ON (A.todoId == B.id)
   `;
 
-  const STATEMENT_TOTAL_COUNT = `SELECT count(*) AS totalCount FROM todo`;
+  const STATEMENT_TOTAL_COUNT = `SELECT count(*) AS totalCount FROM todo WHERE isDeleted == 0`;
 
   db.all(STATEMENT_TODO, (error, rowsTodo) => {
     if (error) res.status(500).json({ error: error.message });
@@ -112,19 +112,18 @@ router.delete("/todo/:id", ({ params: { id } }, res) => {
  * todo_reference CRUD
  */
 router.post(
-  "/todo/:id/references",
+  "/todo/:id/reference",
   ({ params: { id }, body: { referenceTodoId } }, res) => {
     const STATEMENT = `
       INSERT INTO todo_reference
-      VALUES
-        ${referenceTodoId.map(v => `(${id}, ${Number(v)})`)}
+      VALUES (${id}, ${referenceTodoId})
     `;
 
     db.run(STATEMENT, error => {
       if (error) res.status(500).json({ error: error.message });
 
       res.json({
-        message: `${id}번 todo에 ${referenceTodoId.length}개의 todo가 참조되었습니다.`,
+        message: `${id}번 todo에 ${referenceTodoId}번 todo가 참조되었습니다.`,
         data: {},
         meta: {}
       });
@@ -132,7 +131,7 @@ router.post(
   }
 );
 
-router.get("/todo/:id/references", ({ params: { id } }, res) => {
+router.get("/todo/:id/reference", ({ params: { id } }, res) => {
   const STATEMENT = `SELECT * FROM todo_reference WHERE todoId == ${id}`;
 
   db.all(STATEMENT, (error, rows) => {

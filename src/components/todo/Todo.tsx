@@ -3,12 +3,14 @@ import React, {
   useCallback,
   ChangeEvent,
   FocusEvent,
-  MouseEvent
+  MouseEvent,
+  DragEvent
 } from "react";
 import { getThisTodo, patchTodo, deleteTodo } from "services/todoService";
-import classnames from "classnames/bind";
+import { postTodoReference } from "services/todoReferenceService";
 import { ITodo } from "types";
 
+import classnames from "classnames/bind";
 import styles from "./Todo.module.scss";
 
 const cx = classnames.bind(styles);
@@ -81,8 +83,40 @@ export default ({
     [id, getTodoHandler]
   );
 
+  const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
+    event.dataTransfer.setData("text/plain", event.currentTarget.id);
+  };
+
+  const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
+  };
+
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+
+    const targetId = event.currentTarget.id;
+    const referenceId = event.dataTransfer.getData("text");
+
+    if (targetId === referenceId) return;
+
+    postTodoReference(Number(targetId), {
+      referenceTodoId: Number(referenceId)
+    }).then(({ message }) => {
+      alert(message);
+      getTodoHandler();
+    });
+  };
+
   return (
-    <div className={cx("todo-card")}>
+    <div
+      id={String(id)}
+      className={cx("todo-card")}
+      draggable="true"
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
       <div className={cx("card")}>
         <input
           type="checkbox"

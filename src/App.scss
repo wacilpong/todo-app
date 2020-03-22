@@ -16,6 +16,7 @@
 
 body {
   @include baseFontSize();
+  font-family: "Noto Sans", sans-serif;
 }
 
 input:not([type="checkbox"]),
@@ -31,6 +32,7 @@ input {
 
 button {
   cursor: pointer;
+  background-color: transparent;
 }
 
 main {

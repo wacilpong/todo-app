@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useHistory } from "react-router-dom";
-import { Add, Todo, Pagination } from "components";
+import { Add, Pagination, TodoWrapper } from "components";
 import { getTodo } from "services/todoService";
 import { ITodo } from "types";
 import qs from "qs";
@@ -43,11 +43,7 @@ function App() {
     <main>
       <Add getTodoHandler={getTodoHandler} />
 
-      <section>
-        {todoList.map(data => (
-          <Todo key={data.id} data={data} getTodoHandler={getTodoHandler} />
-        ))}
-      </section>
+      <TodoWrapper todoList={todoList} getTodoHandler={getTodoHandler} />
 
       {todoList.length > 0 && (
         <Pagination

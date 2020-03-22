@@ -5,14 +5,13 @@ section.add-tab {
   margin: auto;
   width: 320px;
   height: 36px;
-  font-size: 1.1rem;
 
   input {
-    font-size: inherit;
     border: 1px solid $gray;
     flex: 1;
     margin-right: 6px;
     padding-left: 6px;
+    font-size: 1rem;
   }
 
   button {
@@ -22,5 +21,6 @@ section.add-tab {
     border-radius: 2px;
     background-color: $blue;
     font-weight: 100;
+    font-size: 0.9rem;
   }
 }
