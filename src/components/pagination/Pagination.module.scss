@@ -1,0 +1,30 @@
+@import "~assets/color";
+
+.pagination {
+  text-align: center;
+  color: $gray;
+  margin: 20px 0;
+
+  button:hover {
+    color: $blue;
+  }
+
+  .first::after,
+  .end::after {
+    content: attr(data-arrow);
+    cursor: pointer;
+    display: inline-block;
+    font-size: 1rem;
+  }
+
+  .page {
+    border: none;
+    font-size: 1rem;
+    padding: 0 6px;
+    margin: 0 6px;
+  }
+
+  .page.on {
+    color: $blue;
+  }
+}

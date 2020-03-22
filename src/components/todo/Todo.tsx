@@ -12,11 +12,15 @@ import styles from "./Todo.module.scss";
 
 const cx = classnames.bind(styles);
 
-export default ({
-  data: { id, createdAt, updatedAt, content, referenceTodoId, isDone }
-}: {
+interface IProps {
   data: ITodo;
-}) => {
+  getTodoHandler: () => void;
+}
+
+export default ({
+  data: { id, createdAt, updatedAt, contents, referenceTodoId, isDone },
+  getTodoHandler
+}: IProps) => {
   const referenceTodoIdText = useMemo(
     () => referenceTodoId.reduce((acc, id) => `${acc} @${id}`, ""),
     [referenceTodoId]
@@ -34,16 +38,16 @@ export default ({
     [id]
   );
 
-  const updateContentTodo = useCallback(
+  const updateContentsTodo = useCallback(
     (event: FocusEvent<HTMLInputElement>) => {
       event.preventDefault();
 
       // TODO: event.target.value가 현재 content랑 다를 때만 DB 업데이트
       console.log(id);
-      console.log(content);
+      console.log(contents);
       console.log(event.target.value);
     },
-    [id, content]
+    [id, contents]
   );
 
   const deleteTodo = useCallback(
@@ -69,8 +73,8 @@ export default ({
         <div className={cx("todo")} data-reference={referenceTodoIdText}>
           <input
             type="text"
-            defaultValue={content}
-            onBlur={updateContentTodo}
+            defaultValue={contents}
+            onBlur={updateContentsTodo}
           />
         </div>
         <button type="button" onClick={deleteTodo}>

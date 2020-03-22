@@ -1,19 +1,20 @@
-export interface IPromiseSuccess<T> {
+export interface IPromiseSuccess<T, M = any> {
   message?: string;
+  meta: M;
   data: T;
 }
 
 export interface IPage {
-  number: number;
-  size: number;
-  total?: number;
+  page: number;
+  size?: number;
+  totalCount?: number;
 }
 
 export interface ITodo {
   id: number;
   createdAt: string;
   updatedAt: string;
-  content: string;
+  contents: string;
   referenceTodoId: number[];
   isDone: number;
   isDeleted: number;

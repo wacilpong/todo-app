@@ -17,37 +17,43 @@ router.post("/todo", ({ body: { contents, isDone } }, res) => {
   db.run(STATEMENT, error => {
     if (error) res.status(500).json({ error: error.message });
 
-    res.json({ message: "등록되었습니다.", data: {} });
+    res.json({ message: "등록되었습니다.", data: {}, meta: {} });
   });
 });
 
 router.get("/todo", ({ query: { page = 1, size = 5 } }, res) => {
   const STATEMENT_TODO = `
-    SELECT * FROM todo
-    WHERE isDeleted == 0
-    LIMIT ${size}
-    OFFSET ${size * (page - 1)}
+  SELECT * FROM todo
+  WHERE isDeleted == 0
+  LIMIT ${size}
+  OFFSET ${size * (page - 1)}
   `;
 
   const STATEMENT_REFERENCE = `
-    SELECT todoId, referenceTodoId FROM todo_reference AS A
-      INNER JOIN todo AS B
-      ON (A.todoId == B.id)
+  SELECT todoId, referenceTodoId FROM todo_reference AS A
+  INNER JOIN todo AS B
+  ON (A.todoId == B.id)
   `;
+
+  const STATEMENT_TOTAL_COUNT = `SELECT count(*) AS totalCount FROM todo`;
 
   db.all(STATEMENT_TODO, (error, rowsTodo) => {
     if (error) res.status(500).json({ error: error.message });
 
-    db.all(STATEMENT_REFERENCE, (error, rowsReference) => {
-      if (error) res.status(500).json({ error: error.message });
+    db.all(STATEMENT_REFERENCE, (error2, rowsReference) => {
+      if (error2) res.status(500).json({ error: error2.message });
 
-      const result = rowsTodo.map(t => {
-        const references = rowsReference.filter(r => r.todoId === t.id);
-        t.referenceTodoId = references;
-        return t;
+      db.each(STATEMENT_TOTAL_COUNT, (error3, totalCount) => {
+        if (error3) res.status(500).json({ error: error3.message });
+
+        const result = rowsTodo.map(t => {
+          const references = rowsReference.filter(r => r.todoId === t.id);
+          t.referenceTodoId = references;
+          return t;
+        });
+
+        res.json({ data: result, meta: totalCount });
       });
-
-      res.json({ data: result });
     });
   });
 });
@@ -77,7 +83,7 @@ router.patch("/todo/:id", ({ body, params: { id } }, res) => {
   db.run(STATEMENT, error => {
     if (error) res.status(500).json({ error: error.message });
 
-    res.json({ message: "수정되었습니다.", data: {} });
+    res.json({ message: "수정되었습니다.", data: {}, meta: {} });
   });
 });
 
@@ -94,7 +100,7 @@ router.delete("/todo/:id", ({ params: { id } }, res) => {
       if (error) res.status(500).json({ error: error.message });
     });
 
-    res.json({ message: "삭제되었습니다.", data: {} });
+    res.json({ message: "삭제되었습니다.", data: {}, meta: {} });
   });
 });
 
@@ -115,7 +121,8 @@ router.post(
 
       res.json({
         message: `${id}번 todo에 ${referenceTodoId.length}개의 todo가 참조되었습니다.`,
-        data: {}
+        data: {},
+        meta: {}
       });
     });
   }
@@ -127,7 +134,7 @@ router.get("/todo/:id/references", ({ params: { id } }, res) => {
   db.all(STATEMENT, (error, rows) => {
     if (error) res.status(500).json({ error: error.message });
 
-    res.json({ data: rows });
+    res.json({ data: rows, meta: {} });
   });
 });
 
