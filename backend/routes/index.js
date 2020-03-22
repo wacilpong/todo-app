@@ -22,17 +22,33 @@ router.post("/todo", ({ body: { contents, isDone } }, res) => {
 });
 
 router.get("/todo", ({ query: { page = 1, size = 5 } }, res) => {
-  const STATEMENT = `
+  const STATEMENT_TODO = `
     SELECT * FROM todo
-    WHERE isDeleted == 1
+    WHERE isDeleted == 0
     LIMIT ${size}
     OFFSET ${size * (page - 1)}
   `;
 
-  db.all(STATEMENT, (error, rows) => {
+  const STATEMENT_REFERENCE = `
+    SELECT todoId, referenceTodoId FROM todo_reference AS A
+      INNER JOIN todo AS B
+      ON (A.todoId == B.id)
+  `;
+
+  db.all(STATEMENT_TODO, (error, rowsTodo) => {
     if (error) res.status(500).json({ error: error.message });
 
-    res.json({ data: rows });
+    db.all(STATEMENT_REFERENCE, (error, rowsReference) => {
+      if (error) res.status(500).json({ error: error.message });
+
+      const result = rowsTodo.map(t => {
+        const references = rowsReference.filter(r => r.todoId === t.id);
+        t.referenceTodoId = references;
+        return t;
+      });
+
+      res.json({ data: result });
+    });
   });
 });
 
