@@ -41,7 +41,7 @@ function App() {
 
   return (
     <main>
-      <Add />
+      <Add getTodoHandler={getTodoHandler} />
 
       <section>
         {todoList.map(data => (

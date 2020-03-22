@@ -1,7 +1,7 @@
-export interface IPromiseSuccess<T, M = any> {
-  message?: string;
-  meta: M;
+export interface IPromiseSuccess<T = any, M = any> {
   data: T;
+  meta: M;
+  message?: string;
 }
 
 export interface IPage {
@@ -18,4 +18,9 @@ export interface ITodo {
   referenceTodoId: number[];
   isDone: number;
   isDeleted: number;
+}
+
+export interface ITodoParams {
+  contents?: string;
+  isDone?: number;
 }

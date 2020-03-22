@@ -5,12 +5,12 @@ const router = express.Router();
 /*
  * todo CRUD
  */
-router.post("/todo", ({ body: { contents, isDone } }, res) => {
+router.post("/todo", ({ body: { contents } }, res) => {
   const STATEMENT = `
     INSERT INTO todo (
       contents, createdAt, updatedAt, isDone
     ) VALUES (
-      "${contents}", datetime("now","localtime"), "", ${Number(isDone)}
+      "${contents}", datetime("now","localtime"), "", 0
     );
   `;
 
@@ -25,6 +25,7 @@ router.get("/todo", ({ query: { page = 1, size = 5 } }, res) => {
   const STATEMENT_TODO = `
   SELECT * FROM todo
   WHERE isDeleted == 0
+  ORDER BY createdAt DESC
   LIMIT ${size}
   OFFSET ${size * (page - 1)}
   `;
