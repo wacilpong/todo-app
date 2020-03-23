@@ -14,7 +14,7 @@ interface IProps {
 
 const PAGE_SET_SIZE = 5;
 
-export default ({ totalCount, page, size, handlePage }: IProps) => {
+export default function Pagination({ totalCount, page, size, handlePage }: IProps) {
   const pageTotal = useMemo(() => Math.ceil(totalCount / size), [totalCount, size]);
   const pageArray = useMemo(
     () =>
@@ -54,7 +54,7 @@ export default ({ totalCount, page, size, handlePage }: IProps) => {
           type="button"
           className={cx("first")}
           data-arrow="<"
-          onClick={() => handlePage(1)}
+          onClick={() => handlePage(page - PAGE_SET_SIZE)}
         />
       )}
 

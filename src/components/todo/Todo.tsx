@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { getThisTodo, patchTodo, deleteTodo } from "services/todoService";
 import { postTodoReference } from "services/todoReferenceService";
+import formatDateTime from "utils/formatDateTime";
 import { ITodo } from "types";
 
 import classnames from "classnames/bind";
@@ -20,10 +21,10 @@ interface IProps {
   getTodoHandler: () => void;
 }
 
-export default ({
+export default function Todo({
   data: { id, createdAt, updatedAt, contents, referenceTodoId, isDone },
   getTodoHandler
-}: IProps) => {
+}: IProps) {
   const boolIsDone = useMemo(() => Boolean(isDone), [isDone]);
   const referenceTodoIdText = useMemo(
     () => referenceTodoId.reduce((acc, id) => `${acc} @${id}`, ""),
@@ -142,8 +143,9 @@ export default ({
       </div>
 
       <div className={cx("description")}>
-        작성일: {createdAt} {updatedAt && `| 최종 수정일: ${updatedAt}`}
+        작성일: {formatDateTime(createdAt)}{" "}
+        {updatedAt && `| 최종 수정일: ${formatDateTime(updatedAt)}`}
       </div>
     </div>
   );
-};
+}

@@ -40,20 +40,20 @@ function App() {
   useEffect(getTodoHandler, [currentPage]);
 
   return (
-    <main>
-      <Add getTodoHandler={getTodoHandler} />
+      <main>
+        <Add getTodoHandler={getTodoHandler} />
 
-      <TodoWrapper todoList={todoList} getTodoHandler={getTodoHandler} />
+        <TodoWrapper todoList={todoList} getTodoHandler={getTodoHandler} />
 
-      {todoList.length > 0 && (
-        <Pagination
-          totalCount={totalCount}
-          page={currentPage}
-          size={ROW_SIZE}
-          handlePage={handlePage}
-        />
-      )}
-    </main>
+        {todoList.length > 0 && (
+          <Pagination
+            totalCount={totalCount}
+            page={currentPage}
+            size={ROW_SIZE}
+            handlePage={handlePage}
+          />
+        )}
+      </main>
   );
 }
 

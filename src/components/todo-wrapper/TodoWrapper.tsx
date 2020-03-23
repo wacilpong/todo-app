@@ -16,9 +16,10 @@ export default ({ todoList, getTodoHandler }: IProps) => (
   <section className={cx("todo-tab")}>
     {todoList.length > 1 && (
       <div className={cx("tip")}>
-        Tip!&nbsp;&nbsp;드래그해서 다른 to-do로 참조할 수 있어요.
+        Tip!&nbsp;&nbsp;to-do를 드래그해서 다른 to-do로 참조할 수 있어요.
       </div>
     )}
+
     {todoList.map(data => (
       <Todo key={data.id} data={data} getTodoHandler={getTodoHandler} />
     ))}

@@ -2,6 +2,9 @@ const express = require("express");
 const db = require("../database");
 const router = express.Router();
 
+// TODO: 가져온 쿼리 데이터를 가공하는 부분을 분리하기
+// TODO: ORM 방식을 고려해보기
+// TODO: 500번 에러별 메세지 처리
 /*
  * todo CRUD
  */
@@ -21,7 +24,7 @@ router.post("/todo", ({ body: { contents } }, res) => {
   });
 });
 
-router.get("/todo", ({ query: { page = 1, size = 5 } }, res) => {
+router.get("/todo", async ({ query: { page = 1, size = 5 } }, res) => {
   const STATEMENT_TODO = `
   SELECT * FROM todo
   WHERE isDeleted == 0
@@ -38,6 +41,7 @@ router.get("/todo", ({ query: { page = 1, size = 5 } }, res) => {
 
   const STATEMENT_TOTAL_COUNT = `SELECT count(*) AS totalCount FROM todo WHERE isDeleted == 0`;
 
+  // TODO: 중첩 콜백함수 제거, row를 다른곳에 저장해두고 가공할 방법 찾기
   db.all(STATEMENT_TODO, (error, rowsTodo) => {
     if (error) res.status(500).json({ error: error.message });
 

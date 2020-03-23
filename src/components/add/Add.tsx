@@ -10,7 +10,7 @@ interface IProps {
   getTodoHandler: () => void;
 }
 
-export default ({ getTodoHandler }: IProps) => {
+export default function Add({ getTodoHandler }: IProps) {
   const [contents, setContents] = useState<string>("");
 
   const setContentsHandler = (event: ChangeEvent<HTMLInputElement>) =>
@@ -19,10 +19,11 @@ export default ({ getTodoHandler }: IProps) => {
   const enterHandler = (event: KeyboardEvent<HTMLInputElement>) => {
     event.preventDefault();
 
-    if (contents && event.keyCode === 13) createTodo();
+    if (event.keyCode === 13) createTodo();
   };
 
   const createTodo = () =>
+    contents &&
     postTodo({ contents }).then(({ message }) => {
       setContents("");
       getTodoHandler();
@@ -37,10 +38,11 @@ export default ({ getTodoHandler }: IProps) => {
         placeholder="Todo Item"
         onChange={setContentsHandler}
         onKeyUp={enterHandler}
+        value={contents}
       />
       <button type="button" onClick={createTodo}>
         Add Todo
       </button>
     </section>
   );
-};
+}
