@@ -9,7 +9,7 @@ const router = express.Router();
  * todo CRUD
  */
 router.post("/todo", ({ body: { contents } }, res) => {
-  const STATEMENT = `
+  const SQL = `
     INSERT INTO todo (
       contents, createdAt, updatedAt, isDone
     ) VALUES (
@@ -17,7 +17,7 @@ router.post("/todo", ({ body: { contents } }, res) => {
     );
   `;
 
-  db.run(STATEMENT, error => {
+  db.run(SQL, error => {
     if (error) res.status(500).json({ error: error.message });
 
     res.json({ message: "등록되었습니다.", data: {}, meta: {} });
@@ -25,7 +25,7 @@ router.post("/todo", ({ body: { contents } }, res) => {
 });
 
 router.get("/todo", async ({ query: { page = 1, size = 5 } }, res) => {
-  const STATEMENT_TODO = `
+  const SQL_TODO = `
   SELECT * FROM todo
   WHERE isDeleted == 0
   ORDER BY createdAt DESC
@@ -33,22 +33,22 @@ router.get("/todo", async ({ query: { page = 1, size = 5 } }, res) => {
   OFFSET ${size * (page - 1)}
   `;
 
-  const STATEMENT_REFERENCE = `
+  const SQL_REFERENCE = `
   SELECT todoId, referenceTodoId FROM todo_reference AS A
   INNER JOIN todo AS B
   ON (A.todoId == B.id)
   `;
 
-  const STATEMENT_TOTAL_COUNT = `SELECT count(*) AS totalCount FROM todo WHERE isDeleted == 0`;
+  const SQL_TOTAL_COUNT = `SELECT count(*) AS totalCount FROM todo WHERE isDeleted == 0`;
 
   // TODO: 중첩 콜백함수 제거, row를 다른곳에 저장해두고 가공할 방법 찾기
-  db.all(STATEMENT_TODO, (error, rowsTodo) => {
+  db.all(SQL_TODO, (error, rowsTodo) => {
     if (error) res.status(500).json({ error: error.message });
 
-    db.all(STATEMENT_REFERENCE, (error2, rowsReference) => {
+    db.all(SQL_REFERENCE, (error2, rowsReference) => {
       if (error2) res.status(500).json({ error: error2.message });
 
-      db.each(STATEMENT_TOTAL_COUNT, (error3, totalCount) => {
+      db.each(SQL_TOTAL_COUNT, (error3, totalCount) => {
         if (error3) res.status(500).json({ error: error3.message });
 
         const result = rowsTodo.map(t => {
@@ -67,9 +67,9 @@ router.get("/todo", async ({ query: { page = 1, size = 5 } }, res) => {
 });
 
 router.get("/todo/:id", ({ params: { id } }, res) => {
-  const STATEMENT = `SELECT * FROM todo WHERE id == ${id}`;
+  const SQL = `SELECT * FROM todo WHERE id == ${id}`;
 
-  db.each(STATEMENT, (error, row) => {
+  db.each(SQL, (error, row) => {
     if (error) res.status(500).json({ error: error.message });
 
     res.json({ data: row });
@@ -82,13 +82,13 @@ router.patch("/todo/:id", ({ body, params: { id } }, res) => {
   if (body.contents !== undefined) queryCase = `contents = "${body.contents}"`;
   if (body.isDone !== undefined) queryCase = `isDone = ${body.isDone}`;
 
-  const STATEMENT = `
+  const SQL = `
     UPDATE todo SET
       updatedAt = datetime("now","localtime"), ${queryCase}
     WHERE id == ${id}
   `;
 
-  db.run(STATEMENT, error => {
+  db.run(SQL, error => {
     if (error) res.status(500).json({ error: error.message });
 
     res.json({ message: "수정되었습니다.", data: {}, meta: {} });
@@ -96,15 +96,15 @@ router.patch("/todo/:id", ({ body, params: { id } }, res) => {
 });
 
 router.delete("/todo/:id", ({ params: { id } }, res) => {
-  const STATEMENT_UPDATE = `UPDATE todo SET isDeleted = 1 WHERE id == ${id}`;
-  const STATEMENT_DELETE = `DELETE FROM todo_reference WHERE referenceTodoId == ${id}`;
+  const SQL_UPDATE = `UPDATE todo SET isDeleted = 1 WHERE id == ${id}`;
+  const SQL_DELETE = `DELETE FROM todo_reference WHERE referenceTodoId == ${id}`;
 
   db.serialize(() => {
-    db.run(STATEMENT_UPDATE, error => {
+    db.run(SQL_UPDATE, error => {
       if (error) res.status(500).json({ error: error.message });
     });
 
-    db.all(STATEMENT_DELETE, error => {
+    db.all(SQL_DELETE, error => {
       if (error) res.status(500).json({ error: error.message });
     });
 
@@ -118,16 +118,23 @@ router.delete("/todo/:id", ({ params: { id } }, res) => {
 router.post(
   "/todo/:id/reference",
   ({ params: { id }, body: { referenceTodoId } }, res) => {
-    const STATEMENT = `
+    const SQL = `
       INSERT INTO todo_reference
-      VALUES (${id}, ${referenceTodoId})
+      SELECT ${id}, ${referenceTodoId}
+      WHERE NOT EXISTS (
+        SELECT * FROM todo_reference
+        WHERE todoId == ${id} AND referenceTodoId == ${referenceTodoId}
+      )
     `;
 
-    db.run(STATEMENT, error => {
+    db.run(SQL, function(error) {
       if (error) res.status(500).json({ error: error.message });
 
       res.json({
-        message: `${id}번 todo에 ${referenceTodoId}번 todo가 참조되었습니다.`,
+        message:
+          this.changes > 0
+            ? `${id}번 todo에 ${referenceTodoId}번 todo가 참조되었습니다.`
+            : `이미 참조된 todo입니다.`,
         data: {},
         meta: {}
       });
