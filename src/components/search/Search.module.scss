@@ -1,0 +1,50 @@
+@import "~assets/color";
+
+.search-tab {
+  text-align: right;
+  margin-top: 30px;
+
+  .keyword-box {
+    input.keyword {
+      border-bottom: 1px solid $gray;
+      padding: 5px 0;
+    }
+
+    .search {
+      color: $boldGray;
+      font-size: 1.2rem;
+    }
+  }
+
+  .filter-box {
+    display: flex;
+    justify-content: flex-end;
+    margin: 20px 0 10px auto;
+    font-size: 0.875rem;
+
+    .filter {
+      color: $blue;
+      font-size: 1rem;
+      margin-right: 6px;
+    }
+
+    select:first-of-type {
+      margin-right: 6px;
+    }
+  }
+
+  .sort-box {
+    display: flex;
+    justify-content: flex-end;
+
+    select {
+      width: 145px;
+    }
+
+    .sort {
+      color: $blue;
+      font-size: 1.1rem;
+      margin-right: 6px;
+    }
+  }
+}

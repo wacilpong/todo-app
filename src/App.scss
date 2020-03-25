@@ -17,6 +17,7 @@
 body {
   @include baseFontSize();
   font-family: "Noto Sans", sans-serif;
+  font-size: 1rem;
 }
 
 input:not([type="checkbox"]),
@@ -41,4 +42,8 @@ main {
   padding: 10px;
   min-width: 320px;
   max-width: 768px;
+}
+
+s {
+  font-size: 1rem;
 }

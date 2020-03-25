@@ -1,9 +1,10 @@
 @import "~assets/color";
 
 section.todo-tab {
+  margin-top: 10px;
+
   .tip {
     color: $blue;
-    margin-top: 20px;
     font-size: 0.875rem;
   }
 }

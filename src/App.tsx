@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useHistory } from "react-router-dom";
-import { Add, Pagination, TodoWrapper } from "components";
+import { Add, Pagination, TodoWrapper, Search } from "components";
 import { getTodo } from "services/todoService";
 import { ITodo } from "types";
 import qs from "qs";
@@ -40,20 +40,22 @@ function App() {
   useEffect(getTodoHandler, [currentPage]);
 
   return (
-      <main>
-        <Add getTodoHandler={getTodoHandler} />
+    <main>
+      <Add getTodoHandler={getTodoHandler} />
 
-        <TodoWrapper todoList={todoList} getTodoHandler={getTodoHandler} />
+      <Search />
 
-        {todoList.length > 0 && (
-          <Pagination
-            totalCount={totalCount}
-            page={currentPage}
-            size={ROW_SIZE}
-            handlePage={handlePage}
-          />
-        )}
-      </main>
+      <TodoWrapper todoList={todoList} getTodoHandler={getTodoHandler} />
+
+      {todoList.length > 0 && (
+        <Pagination
+          totalCount={totalCount}
+          page={currentPage}
+          size={ROW_SIZE}
+          handlePage={handlePage}
+        />
+      )}
+    </main>
   );
 }
 

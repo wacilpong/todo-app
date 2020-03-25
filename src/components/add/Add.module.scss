@@ -6,7 +6,7 @@ section.add-tab {
   width: 320px;
   height: 36px;
 
-  input {
+  input[type="text"] {
     border: 1px solid $gray;
     flex: 1;
     margin-right: 6px;
