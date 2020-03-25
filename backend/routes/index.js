@@ -97,7 +97,7 @@ router.patch("/todo/:id", ({ body, params: { id } }, res) => {
 
 router.delete("/todo/:id", ({ params: { id } }, res) => {
   const SQL_UPDATE = `UPDATE todo SET isDeleted = 1 WHERE id == ${id}`;
-  const SQL_DELETE = `DELETE FROM todo_reference WHERE referenceTodoId == ${id}`;
+  const SQL_DELETE = `DELETE FROM todo_reference WHERE (todoId == ${id} OR referenceTodoId == ${id})`;
 
   db.serialize(() => {
     db.run(SQL_UPDATE, error => {
@@ -123,7 +123,9 @@ router.post(
       SELECT ${id}, ${referenceTodoId}
       WHERE NOT EXISTS (
         SELECT * FROM todo_reference
-        WHERE todoId == ${id} AND referenceTodoId == ${referenceTodoId}
+        WHERE
+        (todoId == ${id} AND referenceTodoId == ${referenceTodoId}) OR
+        (todoId == ${referenceTodoId} AND referenceTodoId == ${id})
       )
     `;
 
