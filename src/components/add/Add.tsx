@@ -1,16 +1,15 @@
 import React, { ChangeEvent, useState, KeyboardEvent } from "react";
 import { postTodo } from "services/todoService";
-import classnames from "classnames/bind";
+import useTodo from "hooks/useTodo";
 
+import classnames from "classnames/bind";
 import styles from "./Add.module.scss";
 
 const cx = classnames.bind(styles);
 
-interface IProps {
-  getTodoHandler: () => void;
-}
+export default function Add() {
+  const { getTodoHandler } = useTodo();
 
-export default function Add({ getTodoHandler }: IProps) {
   const [contents, setContents] = useState<string>("");
 
   const setContentsHandler = (event: ChangeEvent<HTMLInputElement>) =>

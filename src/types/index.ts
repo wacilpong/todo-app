@@ -10,6 +10,14 @@ export interface IPage {
   totalCount?: number;
 }
 
+export interface ITodoQueryJson {
+  page?: number;
+  size?: number;
+  deleted?: number;
+  done?: number;
+  query?: string;
+}
+
 export interface ITodo {
   id: number;
   createdAt: string;

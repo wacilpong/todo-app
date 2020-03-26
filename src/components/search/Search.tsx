@@ -1,4 +1,5 @@
 import React from "react";
+import useTodo from "hooks/useTodo";
 
 import classnames from "classnames/bind";
 import styles from "./Search.module.scss";
@@ -6,6 +7,8 @@ import styles from "./Search.module.scss";
 const cx = classnames.bind(styles);
 
 export default function Search() {
+  const { getTodoHandler } = useTodo();
+
   return (
     <section className={cx("search-tab")}>
       <div className={cx("keyword-box")}>

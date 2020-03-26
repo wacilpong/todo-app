@@ -8,6 +8,7 @@ const router = express.Router();
 /*
  * todo CRUD
  */
+
 router.post("/todo", ({ body: { contents } }, res) => {
   const SQL = `
     INSERT INTO todo (
@@ -24,47 +25,59 @@ router.post("/todo", ({ body: { contents } }, res) => {
   });
 });
 
-router.get("/todo", async ({ query: { page = 1, size = 5 } }, res) => {
-  const SQL_TODO = `
+router.get(
+  "/todo",
+  async (
+    {
+      query: { page = 1, size = 5, deleted = "0", sort = "newest", done, query }
+    },
+    res
+  ) => {
+    const SQL_TODO = `
   SELECT * FROM todo
-  WHERE isDeleted == 0
-  ORDER BY createdAt DESC
+  WHERE (
+    isDeleted == ${Number(deleted)}
+    ${done !== undefined ? `AND isDone == ${Number(done)}` : ``}
+    ${query !== undefined ? `AND contents LIKE "%${query}%"` : ``}
+  )
+  ORDER BY createdAt ${sort === "newest" ? "DESC" : "ASC"}
   LIMIT ${size}
   OFFSET ${size * (page - 1)}
   `;
 
-  const SQL_REFERENCE = `
+    const SQL_REFERENCE = `
   SELECT todoId, referenceTodoId FROM todo_reference AS A
   INNER JOIN todo AS B
   ON (A.todoId == B.id)
   `;
 
-  const SQL_TOTAL_COUNT = `SELECT count(*) AS totalCount FROM todo WHERE isDeleted == 0`;
+    const SQL_TOTAL_COUNT = `SELECT count(*) AS totalCount FROM todo WHERE isDeleted == 0`;
 
-  // TODO: 중첩 콜백함수 제거, row를 다른곳에 저장해두고 가공할 방법 찾기
-  db.all(SQL_TODO, (error, rowsTodo) => {
-    if (error) res.status(500).json({ error: error.message });
+    // TODO: 중첩 콜백함수 제거, row를 다른곳에 저장해두고 가공할 방법 찾기
+    db.all(SQL_TODO, (error, rowsTodo) => {
+      if (error) res.status(500).json({ error: error.message });
 
-    db.all(SQL_REFERENCE, (error2, rowsReference) => {
-      if (error2) res.status(500).json({ error: error2.message });
+      db.all(SQL_REFERENCE, (error2, rowsReference) => {
+        if (error2) res.status(500).json({ error: error2.message });
 
-      db.each(SQL_TOTAL_COUNT, (error3, totalCount) => {
-        if (error3) res.status(500).json({ error: error3.message });
+        db.each(SQL_TOTAL_COUNT, (error3, totalCount) => {
+          if (error3) res.status(500).json({ error: error3.message });
 
-        const result = rowsTodo.map(t => {
-          const references = rowsReference
-            .filter(r => r.todoId === t.id)
-            .map(row => row.referenceTodoId);
+          const result = rowsTodo.map(t => {
+            const references = rowsReference
+              .filter(r => r.todoId === t.id)
+              .map(row => row.referenceTodoId);
 
-          t.referenceTodoId = references;
-          return t;
+            t.referenceTodoId = references;
+            return t;
+          });
+
+          res.json({ data: result, meta: totalCount });
         });
-
-        res.json({ data: result, meta: totalCount });
       });
     });
-  });
-});
+  }
+);
 
 router.get("/todo/:id", ({ params: { id } }, res) => {
   const SQL = `SELECT * FROM todo WHERE id == ${id}`;
@@ -111,10 +124,6 @@ router.delete("/todo/:id", ({ params: { id } }, res) => {
     res.json({ message: "삭제되었습니다.", data: {}, meta: {} });
   });
 });
-
-// router.get("/todo/search", (req, res) => {
-
-// })
 
 /*
  * todo_reference CRUD
