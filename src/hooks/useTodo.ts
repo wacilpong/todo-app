@@ -27,16 +27,17 @@ export default function useTodo() {
     [history, qsJson]
   );
 
-  const getTodoHandler = () => {
+  const getTodoHandler = useCallback(() => {
     const params = { ...qsJson, page: currentPage, size: rowSize };
 
     getTodo(params).then(({ data, meta }) => {
       setTotalCount(meta.totalCount);
       setTodoList(data);
     });
-  };
+  }, [currentPage, qsJson]);
 
   return {
+    qsJson,
     rowSize,
     todoList,
     totalCount,

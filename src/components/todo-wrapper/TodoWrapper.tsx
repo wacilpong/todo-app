@@ -1,23 +1,32 @@
 import React, { useEffect } from "react";
-import useTodo from "hooks/useTodo";
 import { Todo, Pagination } from "components";
 
 import classnames from "classnames/bind";
 import styles from "./TodoWrapper.module.scss";
+import { ITodo, ITodoQueryJson } from "types";
 
 const cx = classnames.bind(styles);
 
-export default function TodoWrapper() {
-  const {
-    todoList,
-    currentPage,
-    totalCount,
-    rowSize,
-    handlePage,
-    getTodoHandler
-  } = useTodo();
+interface IProps {
+  qsJson: ITodoQueryJson;
+  todoList: ITodo[];
+  currentPage: number;
+  totalCount: number;
+  rowSize: number;
+  handlePage: (_page: number) => void;
+  getTodoHandler: () => void;
+}
 
-  useEffect(getTodoHandler, [currentPage]);
+export default function TodoWrapper({
+  qsJson,
+  todoList,
+  currentPage,
+  totalCount,
+  rowSize,
+  handlePage,
+  getTodoHandler
+}: IProps) {
+  useEffect(getTodoHandler, [qsJson]);
 
   return (
     <section className={cx("todo-tab")}>

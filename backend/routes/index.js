@@ -27,31 +27,38 @@ router.post("/todo", ({ body: { contents } }, res) => {
 
 router.get(
   "/todo",
-  async (
+  (
     {
       query: { page = 1, size = 5, deleted = "0", sort = "newest", done, query }
     },
     res
   ) => {
+    const SQL_TODO_WHERE = `
+      WHERE (
+        isDeleted == ${Number(deleted)}
+        ${done !== undefined ? `AND isDone == ${Number(done)}` : ``}
+        ${query !== undefined ? `AND contents LIKE "%${query}%"` : ``}
+      )
+    `;
     const SQL_TODO = `
-  SELECT * FROM todo
-  WHERE (
-    isDeleted == ${Number(deleted)}
-    ${done !== undefined ? `AND isDone == ${Number(done)}` : ``}
-    ${query !== undefined ? `AND contents LIKE "%${query}%"` : ``}
-  )
-  ORDER BY createdAt ${sort === "newest" ? "DESC" : "ASC"}
-  LIMIT ${size}
-  OFFSET ${size * (page - 1)}
-  `;
+      SELECT * FROM todo
+      ${SQL_TODO_WHERE}
+      ORDER BY createdAt ${sort === "newest" ? "DESC" : "ASC"}
+      LIMIT ${size}
+      OFFSET ${size * (page - 1)}
+    `;
 
     const SQL_REFERENCE = `
-  SELECT todoId, referenceTodoId FROM todo_reference AS A
-  INNER JOIN todo AS B
-  ON (A.todoId == B.id)
-  `;
+      SELECT todoId, referenceTodoId FROM todo_reference AS A
+      INNER JOIN todo AS B
+      ON (A.todoId == B.id)
+    `;
 
-    const SQL_TOTAL_COUNT = `SELECT count(*) AS totalCount FROM todo WHERE isDeleted == 0`;
+    const SQL_TOTAL_COUNT = `
+      SELECT count(*) AS totalCount
+      FROM todo
+      ${SQL_TODO_WHERE}
+    `;
 
     // TODO: 중첩 콜백함수 제거, row를 다른곳에 저장해두고 가공할 방법 찾기
     db.all(SQL_TODO, (error, rowsTodo) => {
