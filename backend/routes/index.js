@@ -33,16 +33,21 @@ router.get(
     },
     res
   ) => {
-    const SQL_TODO_WHERE = `
+    const TODO_WHERE = `
       WHERE (
         isDeleted == ${Number(deleted)}
         ${done !== undefined ? `AND isDone == ${Number(done)}` : ``}
-        ${query !== undefined ? `AND contents LIKE "%${query}%"` : ``}
+        ${
+          query !== undefined
+            ? `AND (contents LIKE "%${query}%" OR id == ${query})`
+            : ``
+        }
       )
     `;
+
     const SQL_TODO = `
       SELECT * FROM todo
-      ${SQL_TODO_WHERE}
+      ${TODO_WHERE}
       ORDER BY createdAt ${sort === "newest" ? "DESC" : "ASC"}
       LIMIT ${size}
       OFFSET ${size * (page - 1)}
@@ -57,7 +62,7 @@ router.get(
     const SQL_TOTAL_COUNT = `
       SELECT count(*) AS totalCount
       FROM todo
-      ${SQL_TODO_WHERE}
+      ${TODO_WHERE}
     `;
 
     // TODO: 중첩 콜백함수 제거, row를 다른곳에 저장해두고 가공할 방법 찾기
