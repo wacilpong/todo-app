@@ -87,13 +87,13 @@ export default function Search() {
         <i className={cx("fas fa-filter", "filter")} />
 
         <select name={SearchKey.done} onChange={setSearchParamsHandler}>
-          <option value="">완료여부 (전체)</option>
+          <option value="">완료여부</option>
           <option value="1">완료</option>
           <option value="0">미완료</option>
         </select>
 
         <select name={SearchKey.deleted} onChange={setSearchParamsHandler}>
-          <option value="">삭제여부 (전체)</option>
+          <option value="">삭제여부</option>
           <option value="1">삭제</option>
           <option value="0">미삭제</option>
         </select>

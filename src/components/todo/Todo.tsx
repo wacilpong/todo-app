@@ -22,7 +22,15 @@ interface IProps {
 }
 
 export default function Todo({
-  data: { id, createdAt, updatedAt, contents, referenceTodoId, isDone },
+  data: {
+    id,
+    createdAt,
+    updatedAt,
+    contents,
+    referenceTodoId,
+    isDone,
+    isDeleted
+  },
   getTodoHandler
 }: IProps) {
   const boolIsDone = useMemo(() => Boolean(isDone), [isDone]);
@@ -43,7 +51,7 @@ export default function Todo({
     });
   }, [referenceTodoId]);
 
-  const updateCompleteTodo = useCallback(
+  const updateDoneTodo = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
       event.persist();
 
@@ -123,7 +131,7 @@ export default function Todo({
           type="checkbox"
           className={cx("completed")}
           checked={Boolean(isDone)}
-          onChange={updateCompleteTodo}
+          onChange={updateDoneTodo}
         />
         <span className={cx("id")}>{id}</span>
         <div className={cx("todo")} data-reference={referenceTodoIdText}>
@@ -137,9 +145,12 @@ export default function Todo({
             />
           )}
         </div>
-        <button type="button" onClick={deleteThisTodo}>
-          X
-        </button>
+
+        {!isDeleted && (
+          <button type="button" onClick={deleteThisTodo}>
+            X
+          </button>
+        )}
       </div>
 
       <div className={cx("description")}>

@@ -39,7 +39,7 @@ router.get(
         ${done !== undefined ? `AND isDone == ${Number(done)}` : ``}
         ${
           query !== undefined
-            ? `AND (contents LIKE "%${query}%" OR id == ${query})`
+            ? `AND (contents LIKE "%${query}%" OR id LIKE "${query}")`
             : ``
         }
       )
