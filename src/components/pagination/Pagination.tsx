@@ -14,8 +14,16 @@ interface IProps {
 
 const PAGE_SET_SIZE = 5;
 
-export default function Pagination({ totalCount, page, size, handlePage }: IProps) {
-  const pageTotal = useMemo(() => Math.ceil(totalCount / size), [totalCount, size]);
+export default function Pagination({
+  totalCount,
+  page,
+  size,
+  handlePage
+}: IProps) {
+  const pageTotal = useMemo(() => Math.ceil(totalCount / size), [
+    totalCount,
+    size
+  ]);
   const pageArray = useMemo(
     () =>
       Array(pageTotal)
@@ -25,8 +33,12 @@ export default function Pagination({ totalCount, page, size, handlePage }: IProp
   );
 
   const currentPageSet = useMemo(() => Math.ceil(page / PAGE_SET_SIZE), [page]);
-  const totalPageSet = useMemo(() => Math.ceil(pageTotal / PAGE_SET_SIZE), [pageTotal]);
-  const pageOffset = useMemo(() => currentPageSet * PAGE_SET_SIZE, [currentPageSet]);
+  const totalPageSet = useMemo(() => Math.ceil(pageTotal / PAGE_SET_SIZE), [
+    pageTotal
+  ]);
+  const pageOffset = useMemo(() => currentPageSet * PAGE_SET_SIZE, [
+    currentPageSet
+  ]);
 
   const start = useMemo(
     () => pageArray.indexOf((currentPageSet - 1) * PAGE_SET_SIZE) + 1,
@@ -53,9 +65,10 @@ export default function Pagination({ totalCount, page, size, handlePage }: IProp
         <button
           type="button"
           className={cx("first")}
-          data-arrow="<"
           onClick={() => handlePage(page - PAGE_SET_SIZE)}
-        />
+        >
+          <i className="fas fa-chevron-left"></i>
+        </button>
       )}
 
       {pageWindow.map(n => (
@@ -73,10 +86,11 @@ export default function Pagination({ totalCount, page, size, handlePage }: IProp
         <button
           type="button"
           className={cx("end")}
-          data-arrow=">"
           onClick={() => handlePage(pageOffset + 1)}
-        />
+        >
+          <i className="fas fa-chevron-right"></i>
+        </button>
       )}
     </section>
   );
-};
+}
