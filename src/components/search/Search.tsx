@@ -71,7 +71,11 @@ export default function Search() {
 
   return (
     <section className={cx("search-tab")}>
-      <div className={cx("keyword-box")}>
+      <button
+        type="button"
+        className={cx("keyword-box")}
+        onClick={setQueryJson}
+      >
         <input
           name={SearchKey.query}
           type="search"
@@ -81,7 +85,7 @@ export default function Search() {
           onKeyUp={enterHandler}
         />
         <i className={cx("fas fa-search", "search")} />
-      </div>
+      </button>
 
       <div className={cx("filter-box")}>
         <i className={cx("fas fa-filter", "filter")} />
