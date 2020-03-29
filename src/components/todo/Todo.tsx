@@ -57,7 +57,7 @@ export default function Todo({
 
       const invalidateTodo = await checkValidateReferenceTodo();
 
-      if (invalidateTodo.length) {
+      if (!boolIsDone && invalidateTodo.length) {
         alert(`참조되어 있는 (${invalidateTodo})번 todo를 먼저 완료해주세요.`);
         return;
       }
