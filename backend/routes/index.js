@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const { Op } = require("sequelize");
 const db = require("../database");
@@ -138,7 +139,7 @@ router.post(
         });
       } else {
         res.json({
-          message: `이미 참조된 todo입니다.`,
+          message: `이미 참조되었거나 순환 참조되는 todo입니다.`,
           data: row,
           meta: {}
         });
@@ -159,6 +160,19 @@ router.get("/todo/:id/reference", async ({ params: { id } }, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+/*
+ * common backup
+ */
+router.get("/common/backup", (req, res) => {
+  const file = `${path.join(__dirname, "..", "db/source.db")}`;
+  const fileName = "backup_source.db";
+
+  res.setHeader("Content-disposition", `attachment; filename=${fileName}`);
+  res.setHeader("Content-type", "application/octet-stream");
+
+  res.download(file, fileName);
 });
 
 module.exports = router;
