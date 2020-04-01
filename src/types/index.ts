@@ -24,9 +24,9 @@ export interface ITodo {
   createdAt: string;
   updatedAt: string;
   contents: string;
-  referenceTodoId: number[];
-  isDone: number;
-  isDeleted: number;
+  todoReferences: { todoReferenceId: number }[];
+  isDone: boolean;
+  isDeleted: boolean;
 }
 
 export interface ITodoParams {

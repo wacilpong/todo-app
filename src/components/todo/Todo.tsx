@@ -27,29 +27,29 @@ export default function Todo({
     createdAt,
     updatedAt,
     contents,
-    referenceTodoId,
+    todoReferences,
     isDone,
     isDeleted
   },
   getTodoHandler
 }: IProps) {
-  const boolIsDone = useMemo(() => Boolean(isDone), [isDone]);
-  const referenceTodoIdText = useMemo(
-    () => referenceTodoId.reduce((acc, id) => `${acc} @${id}`, ""),
-    [referenceTodoId]
+  const todoReferenceIdText = useMemo(
+    () =>
+      todoReferences.reduce((acc, cur) => `${acc} @${cur.todoReferenceId}`, ""),
+    [todoReferences]
   );
 
   const checkValidateReferenceTodo = useCallback(() => {
-    const requests = referenceTodoId.map(referenceId =>
-      getThisTodo(referenceId)
+    const requests = todoReferences.map(({ todoReferenceId }) =>
+      getThisTodo(todoReferenceId)
     );
 
     return Promise.all(requests).then(responses => {
       return responses
-        .filter(({ data: { isDone } }) => !Boolean(isDone))
+        .filter(({ data: { isDone } }) => !isDone)
         .map(({ data: { id } }) => id);
     });
-  }, [referenceTodoId]);
+  }, [todoReferences]);
 
   const updateDoneTodo = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
@@ -57,15 +57,15 @@ export default function Todo({
 
       const invalidateTodo = await checkValidateReferenceTodo();
 
-      if (!boolIsDone && invalidateTodo.length) {
+      if (!isDone && invalidateTodo.length) {
         alert(`참조되어 있는 (${invalidateTodo})번 todo를 먼저 완료해주세요.`);
         return;
       }
 
-      patchTodo(id, { isDone: !boolIsDone ? 1 : 0 });
+      patchTodo(id, { isDone: !isDone ? 1 : 0 });
       getTodoHandler();
     },
-    [id, boolIsDone, checkValidateReferenceTodo, getTodoHandler]
+    [id, isDone, checkValidateReferenceTodo, getTodoHandler]
   );
 
   const updateContentsTodo = useCallback(
@@ -134,7 +134,7 @@ export default function Todo({
           onChange={updateDoneTodo}
         />
         <span className={cx("id")}>{id}</span>
-        <div className={cx("todo")} data-reference={referenceTodoIdText}>
+        <div className={cx("todo")} data-reference={todoReferenceIdText}>
           {isDone ? (
             <s>{contents}</s>
           ) : (
