@@ -27,26 +27,30 @@ router.get(
   "/todo",
   (
     {
-      query: { page = 1, size = 5, deleted = "0", sort = "newest", done, query }
+      query: {
+        page = 1,
+        size = 5,
+        deleted = "0",
+        sort = "newest",
+        query = "",
+        done
+      }
     },
     res
   ) => {
-    const where = { isDeleted: Number(deleted) };
-
-    if (done !== undefined) where["isDone"] = Number(done);
-    if (query !== undefined)
-      where[[Op.or]] = [
+    const where = {
+      isDeleted: Number(deleted),
+      [Op.or]: [
         {
-          contents: {
-            [Op.like]: `%query%`
-          }
+          contents: { [Op.like]: `%${query}%` }
         },
         {
-          id: {
-            [Op.like]: `%query%`
-          }
+          id: { [Op.like]: `%${query}%` }
         }
-      ];
+      ]
+    };
+
+    if (done !== undefined) where["isDone"] = Number(done);
 
     db.Todo.findAndCountAll({
       limit: size,
