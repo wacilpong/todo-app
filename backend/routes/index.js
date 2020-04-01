@@ -1,28 +1,26 @@
 const express = require("express");
+const { Op } = require("sequelize");
 const db = require("../database");
 const router = express.Router();
 
-// TODO: 가져온 쿼리 데이터를 가공하는 부분을 분리하기
-// TODO: ORM 방식을 고려해보기
 // TODO: 500번 에러별 메세지 처리
 /*
  * todo CRUD
  */
 
 router.post("/todo", ({ body: { contents } }, res) => {
-  const SQL = `
-    INSERT INTO todo (
-      contents, createdAt, updatedAt, isDone
-    ) VALUES (
-      "${contents}", datetime("now","localtime"), "", 0
-    );
-  `;
-
-  db.run(SQL, error => {
-    if (error) res.status(500).json({ error: error.message });
-
-    res.json({ message: "등록되었습니다.", data: {}, meta: {} });
-  });
+  db.Todo.create(
+    { contents },
+    {
+      include: [db.TodoReference]
+    }
+  )
+    .then(({ dataValues }) => {
+      res.json({ message: "등록되었습니다.", data: dataValues, meta: {} });
+    })
+    .catch(error => {
+      res.status(500).json({ error: error.message });
+    });
 });
 
 router.get(
@@ -33,107 +31,78 @@ router.get(
     },
     res
   ) => {
-    const TODO_WHERE = `
-      WHERE (
-        isDeleted == ${Number(deleted)}
-        ${done !== undefined ? `AND isDone == ${Number(done)}` : ``}
-        ${
-          query !== undefined
-            ? `AND (contents LIKE "%${query}%" OR id LIKE "${query}")`
-            : ``
+    const where = { isDeleted: Number(deleted) };
+
+    if (done !== undefined) where["isDone"] = Number(done);
+    if (query !== undefined)
+      where[[Op.or]] = [
+        {
+          contents: {
+            [Op.like]: `%query%`
+          }
+        },
+        {
+          id: {
+            [Op.like]: `%query%`
+          }
         }
-      )
-    `;
+      ];
 
-    const SQL_TODO = `
-      SELECT * FROM todo
-      ${TODO_WHERE}
-      ORDER BY createdAt ${sort === "newest" ? "DESC" : "ASC"}
-      LIMIT ${size}
-      OFFSET ${size * (page - 1)}
-    `;
-
-    const SQL_REFERENCE = `
-      SELECT todoId, referenceTodoId FROM todo_reference AS A
-      INNER JOIN todo AS B
-      ON (A.todoId == B.id)
-    `;
-
-    const SQL_TOTAL_COUNT = `
-      SELECT count(*) AS totalCount
-      FROM todo
-      ${TODO_WHERE}
-    `;
-
-    // TODO: 중첩 콜백함수 제거, row를 다른곳에 저장해두고 가공할 방법 찾기
-    db.all(SQL_TODO, (error, rowsTodo) => {
-      if (error) res.status(500).json({ error: error.message });
-
-      db.all(SQL_REFERENCE, (error2, rowsReference) => {
-        if (error2) res.status(500).json({ error: error2.message });
-
-        db.each(SQL_TOTAL_COUNT, (error3, totalCount) => {
-          if (error3) res.status(500).json({ error: error3.message });
-
-          const result = rowsTodo.map(t => {
-            const references = rowsReference
-              .filter(r => r.todoId === t.id)
-              .map(row => row.referenceTodoId);
-
-            t.referenceTodoId = references;
-            return t;
-          });
-
-          res.json({ data: result, meta: totalCount });
-        });
+    db.Todo.findAndCountAll({
+      limit: size,
+      offset: size * (page - 1),
+      order: [["createdAt", sort === "newest" ? "DESC" : "ASC"]],
+      include: {
+        model: db.TodoReference,
+        attributes: ["todoReferenceId"]
+      },
+      where
+    })
+      .then(({ rows, count }) => {
+        res.json({ data: rows, meta: { totalCount: count } });
+      })
+      .catch(error => {
+        res.status(500).json({ error: error.message });
       });
-    });
   }
 );
 
-router.get("/todo/:id", ({ params: { id } }, res) => {
-  const SQL = `SELECT * FROM todo WHERE id == ${id}`;
+router.get("/todo/:id", async ({ params: { id } }, res) => {
+  try {
+    const row = await db.Todo.findOne({ where: { id } });
 
-  db.each(SQL, (error, row) => {
-    if (error) res.status(500).json({ error: error.message });
-
-    res.json({ data: row });
-  });
+    res.json({ data: row, meta: {} });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-router.patch("/todo/:id", ({ body, params: { id } }, res) => {
-  let queryCase = "";
+router.patch(
+  "/todo/:id",
+  ({ body: { contents, isDone }, params: { id } }, res) => {
+    db.Todo.update({ contents, isDone }, { where: { id } })
+      .then(() => {
+        res.json({ message: "수정되었습니다.", data: {}, meta: {} });
+      })
+      .catch(error => {
+        res.status(500).json({ error: error.message });
+      });
+  }
+);
 
-  if (body.contents !== undefined) queryCase = `contents = "${body.contents}"`;
-  if (body.isDone !== undefined) queryCase = `isDone = ${body.isDone}`;
-
-  const SQL = `
-    UPDATE todo SET
-      updatedAt = datetime("now","localtime"), ${queryCase}
-    WHERE id == ${id}
-  `;
-
-  db.run(SQL, error => {
-    if (error) res.status(500).json({ error: error.message });
-
-    res.json({ message: "수정되었습니다.", data: {}, meta: {} });
+router.delete("/todo/:id", async ({ params: { id } }, res) => {
+  await db.TodoReference.destroy({
+    where: {
+      [Op.or]: [{ todoId: id }, { todoReferenceId: id }]
+    }
   });
-});
 
-router.delete("/todo/:id", ({ params: { id } }, res) => {
-  const SQL_UPDATE = `UPDATE todo SET isDeleted = 1 WHERE id == ${id}`;
-  const SQL_DELETE = `DELETE FROM todo_reference WHERE (todoId == ${id} OR referenceTodoId == ${id})`;
+  await db.Todo.update({ isDeleted: 1 }, { where: { id } });
 
-  db.serialize(() => {
-    db.run(SQL_UPDATE, error => {
-      if (error) res.status(500).json({ error: error.message });
-    });
-
-    db.all(SQL_DELETE, error => {
-      if (error) res.status(500).json({ error: error.message });
-    });
-
-    res.json({ message: "삭제되었습니다.", data: {}, meta: {} });
+  res.json({
+    message: "삭제되었습니다.",
+    data: {},
+    meta: {}
   });
 });
 
@@ -142,41 +111,50 @@ router.delete("/todo/:id", ({ params: { id } }, res) => {
  */
 router.post(
   "/todo/:id/reference",
-  ({ params: { id }, body: { referenceTodoId } }, res) => {
-    const SQL = `
-      INSERT INTO todo_reference
-      SELECT ${id}, ${referenceTodoId}
-      WHERE NOT EXISTS (
-        SELECT * FROM todo_reference
-        WHERE
-        (todoId == ${id} AND referenceTodoId == ${referenceTodoId}) OR
-        (todoId == ${referenceTodoId} AND referenceTodoId == ${id})
-      )
-    `;
+  ({ params: { id }, body: { todoReferenceId } }, res) => {
+    db.TodoReference.findOrCreate({
+      where: {
+        [Op.or]: [
+          { [Op.and]: [{ todoId: id }, { todoReferenceId }] },
+          { [Op.and]: [{ todoId: todoReferenceId }, { todoReferenceId: id }] }
+        ]
+      },
+      defaults: {
+        todoId: id,
+        todoReferenceId
+      }
+    }).spread((todo, created) => {
+      const row = todo.get({ plain: true });
 
-    db.run(SQL, function(error) {
-      if (error) res.status(500).json({ error: error.message });
-
-      res.json({
-        message:
-          this.changes > 0
-            ? `${id}번 todo에 ${referenceTodoId}번 todo가 참조되었습니다.`
-            : `이미 참조된 todo입니다.`,
-        data: {},
-        meta: {}
-      });
+      if (created) {
+        res.json({
+          message: `${id}번 todo에 ${todoReferenceId}번 todo가 참조되었습니다.`,
+          data: row,
+          meta: {}
+        });
+      } else {
+        res.json({
+          message: `이미 참조된 todo입니다.`,
+          data: row,
+          meta: {}
+        });
+      }
     });
   }
 );
 
-router.get("/todo/:id/reference", ({ params: { id } }, res) => {
-  const STATEMENT = `SELECT * FROM todo_reference WHERE todoId == ${id}`;
-
-  db.all(STATEMENT, (error, rows) => {
-    if (error) res.status(500).json({ error: error.message });
+router.get("/todo/:id/reference", async ({ params: { id } }, res) => {
+  try {
+    const rows = await db.TodoReference.findAll({
+      where: {
+        todoId: id
+      }
+    });
 
     res.json({ data: rows, meta: {} });
-  });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;
