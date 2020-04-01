@@ -39,6 +39,8 @@ export default function Todo({
     [todoReferences]
   );
 
+  const getDateText = (type: string) => `${formatDateTime(type)} ${formatDateTime(type, "timeStr")}`
+
   const checkValidateTodoReference = useCallback(() => {
     const requests = todoReferences.map(({ todoReferenceId }) =>
       getThisTodo(todoReferenceId)
@@ -152,8 +154,8 @@ export default function Todo({
       </div>
 
       <div className={cx("description")}>
-        작성일: {formatDateTime(createdAt)}&nbsp;
-        {updatedAt && `| 최종 수정일: ${formatDateTime(updatedAt)}`}
+        작성일: {getDateText(createdAt)}&nbsp;
+        {createdAt !== updatedAt && `| 최종 수정일: ${getDateText(updatedAt)}`}
       </div>
     </div>
   );
