@@ -3,7 +3,7 @@
 ### 개발환경
 
 - mac OS catalina v10.15.4
-- node v13.2.0
+- node v12.13.1
 - npm v6.14.4
 
 ### 설치

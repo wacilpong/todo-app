@@ -1,20 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
-  const TodoReference = sequelize.define(
-    "TodoReference",
-    {
-      referenceTodoId: DataTypes.INTEGER
-    },
-    {
-      tableName: "todo_reference"
+  const TodoReference = sequelize.define("todoReference", {
+    todoReferenceId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     }
-  );
-
-  TodoReference.associate = function(models) {
-    models.TodoReference.belongsToMany(models.Todo, {
-      foreignKey: "id",
-      onDelete: "CASCADE"
-    });
-  };
+  });
 
   return TodoReference;
 };
