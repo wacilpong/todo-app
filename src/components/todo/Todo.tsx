@@ -39,7 +39,7 @@ export default function Todo({
     [todoReferences]
   );
 
-  const checkValidateReferenceTodo = useCallback(() => {
+  const checkValidateTodoReference = useCallback(() => {
     const requests = todoReferences.map(({ todoReferenceId }) =>
       getThisTodo(todoReferenceId)
     );
@@ -55,7 +55,7 @@ export default function Todo({
     async (event: ChangeEvent<HTMLInputElement>) => {
       event.persist();
 
-      const invalidateTodo = await checkValidateReferenceTodo();
+      const invalidateTodo = await checkValidateTodoReference();
 
       if (!isDone && invalidateTodo.length) {
         alert(`참조되어 있는 (${invalidateTodo})번 todo를 먼저 완료해주세요.`);
@@ -65,7 +65,7 @@ export default function Todo({
       patchTodo(id, { isDone: !isDone ? 1 : 0 });
       getTodoHandler();
     },
-    [id, isDone, checkValidateReferenceTodo, getTodoHandler]
+    [id, isDone, checkValidateTodoReference, getTodoHandler]
   );
 
   const updateContentsTodo = useCallback(
@@ -104,14 +104,12 @@ export default function Todo({
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
 
-    const targetId = event.currentTarget.id;
-    const referenceId = event.dataTransfer.getData("text");
+    const targetId = Number(event.currentTarget.id);
+    const todoReferenceId = Number(event.dataTransfer.getData("text"));
 
-    if (targetId === referenceId) return;
+    if (targetId === todoReferenceId) return;
 
-    postTodoReference(Number(targetId), {
-      referenceTodoId: Number(referenceId)
-    }).then(({ message }) => {
+    postTodoReference(targetId, { todoReferenceId }).then(({ message }) => {
       alert(message);
       getTodoHandler();
     });
@@ -130,7 +128,7 @@ export default function Todo({
         <input
           type="checkbox"
           className={cx("completed")}
-          checked={Boolean(isDone)}
+          checked={isDone}
           onChange={updateDoneTodo}
         />
         <span className={cx("id")}>{id}</span>
@@ -154,7 +152,7 @@ export default function Todo({
       </div>
 
       <div className={cx("description")}>
-        작성일: {formatDateTime(createdAt)}{" "}
+        작성일: {formatDateTime(createdAt)}&nbsp;
         {updatedAt && `| 최종 수정일: ${formatDateTime(updatedAt)}`}
       </div>
     </div>
