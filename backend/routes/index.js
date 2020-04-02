@@ -17,7 +17,7 @@ router.post("/todo", ({ body: { contents } }, res) => {
       res.json({ message: "등록되었습니다.", data: dataValues, meta: {} });
     })
     .catch(error => {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ message: error.message });
     });
 });
 
@@ -64,7 +64,7 @@ router.get(
         res.json({ data: rows, meta: { totalCount: count } });
       })
       .catch(error => {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: error.message });
       });
   }
 );
@@ -75,7 +75,7 @@ router.get("/todo/:id", async ({ params: { id } }, res) => {
 
     res.json({ data: row, meta: {} });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -87,7 +87,7 @@ router.patch(
         res.json({ message: "수정되었습니다.", data: {}, meta: {} });
       })
       .catch(error => {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: error.message });
       });
   }
 );
@@ -155,7 +155,7 @@ router.get("/todo/:id/reference", async ({ params: { id } }, res) => {
 
     res.json({ data: rows, meta: {} });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -172,8 +172,27 @@ router.get("/common/backup", (req, res) => {
   res.download(file, fileName);
 });
 
-router.post("/common/restore", upload.single("restoreFile"), (req, res) => {
-  res.json({ message: "복원되었습니다.", data: {}, meta: {} });
-});
+router.post(
+  "/common/restore",
+  upload.single("restoreFile"),
+  ({ file }, res) => {
+    if (file.filename !== "source.db") {
+      const fs = require("fs");
+      const removeTarget = `${path.join(__dirname, "..", "db", file.originalname)}`;
+
+      fs.unlink(removeTarget, error => {
+        if (error) throw error;
+
+        res
+          .status(500)
+          .json({ message: "DB 파일만 복원할 수 있습니다." });
+      });
+
+      return;
+    }
+
+    res.json({ message: "복원되었습니다.", data: file.path, meta: {} });
+  }
+);
 
 module.exports = router;

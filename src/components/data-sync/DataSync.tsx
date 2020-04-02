@@ -8,7 +8,11 @@ const cx = classnames.bind(styles);
 
 const BACKUP_API_URL = "http://localhost:55555/api/common/backup";
 
-export default function DataSync() {
+interface IProps {
+  getTodoHandler: () => void;
+}
+
+export default function DataSync({ getTodoHandler }: IProps) {
   const [showRestore, setShowRestore] = useState(false);
 
   const download = () => (window.location.href = BACKUP_API_URL);
@@ -19,9 +23,16 @@ export default function DataSync() {
     const file = (event.target.files ?? [])[0];
 
     if (file) {
-      postCommonRestore(file).then(({ message }) => {
-        alert(message);
-      });
+      postCommonRestore(file)
+        .then(({ message }) => {
+          alert(message);
+
+          setShowRestore(false);
+          getTodoHandler();
+        })
+        .catch(({ data: { message } }) => {
+          alert(message);
+        });
     }
   };
 

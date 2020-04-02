@@ -25,7 +25,7 @@ section.restore {
   position: absolute;
   box-sizing: border-box;
   background-color: white;
-  border: 1px solid $gray;
+  border: 1px solid $boldGray;
   box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.1);
   width: 260px;
   height: 130px;
@@ -33,13 +33,13 @@ section.restore {
   left: 0;
 
   .box {
-    color: $gray;
+    color: $boldGray;
     border: 1px dashed;
     height: calc(100% - 14px);
     margin: 6px;
 
     &::after {
-      content: "백업본 업로드";
+      content: "백업본 업로드 +";
       position: absolute;
       display: flex;
       align-items: center;

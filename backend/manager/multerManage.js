@@ -6,7 +6,10 @@ const storage = multer.diskStorage({
     resolve(null, `${path.join(__dirname, "..", "db/")}`);
   },
   filename: (req, file, resolve) => {
-    resolve(null, "source.db");
+    const [, extension] = file.originalname.split(".");
+
+    if (extension === "db") resolve(null, "source.db");
+    else resolve(null, file.originalname);
   }
 });
 

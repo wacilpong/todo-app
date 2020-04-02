@@ -17,7 +17,7 @@ function App() {
 
   return (
     <main>
-      <DataSync />
+      <DataSync getTodoHandler={getTodoHandler} />
 
       <Add getTodoHandler={getTodoHandler} />
 
