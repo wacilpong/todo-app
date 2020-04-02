@@ -2,6 +2,8 @@ const path = require("path");
 const express = require("express");
 const { Op } = require("sequelize");
 const db = require("../database");
+const upload = require("../manager/multerManage");
+
 const router = express.Router();
 
 // TODO: 500번 에러별 메세지 처리
@@ -158,7 +160,7 @@ router.get("/todo/:id/reference", async ({ params: { id } }, res) => {
 });
 
 /*
- * common backup
+ * common
  */
 router.get("/common/backup", (req, res) => {
   const file = `${path.join(__dirname, "..", "db/source.db")}`;
@@ -168,6 +170,10 @@ router.get("/common/backup", (req, res) => {
   res.setHeader("Content-type", "application/octet-stream");
 
   res.download(file, fileName);
+});
+
+router.post("/common/restore", upload.single("restoreFile"), (req, res) => {
+  res.json({ message: "복원되었습니다.", data: {}, meta: {} });
 });
 
 module.exports = router;

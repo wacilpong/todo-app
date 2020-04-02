@@ -8,7 +8,7 @@
     "start:dev:client": "react-scripts start",
     "start:dev:server": "nodemon ./backend/server.js",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --watchAll",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -37,6 +37,7 @@
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
     "express": "^4.17.1",
+    "multer": "^1.4.2",
     "node-sass": "^4.13.1",
     "qs": "^6.9.1",
     "react": "^16.13.1",
