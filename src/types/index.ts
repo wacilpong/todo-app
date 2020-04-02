@@ -15,7 +15,7 @@ export interface ITodoQueryJson {
   size?: number;
   deleted?: number;
   done?: number;
-  query?: string;
+  keyword?: string;
   sort?: "newest" | "oldest";
 }
 

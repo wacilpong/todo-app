@@ -16,7 +16,7 @@ const cx = classnames.bind(styles);
 type Indexable = { [key: string]: string };
 
 enum SearchKey {
-  query = "query",
+  keyword = "keyword",
   done = "done",
   deleted = "deleted",
   sort = "sort"
@@ -66,7 +66,7 @@ export default function Search() {
   };
 
   useEffect(() => {
-    if (searchKey && searchKey !== SearchKey.query) setQueryJson();
+    if (searchKey && searchKey !== SearchKey.keyword) setQueryJson();
   }, [searchKey, setQueryJson]);
 
   return (
@@ -77,7 +77,7 @@ export default function Search() {
         onClick={setQueryJson}
       >
         <input
-          name={SearchKey.query}
+          name={SearchKey.keyword}
           type="search"
           className={cx("keyword")}
           placeholder="Search Todo..."

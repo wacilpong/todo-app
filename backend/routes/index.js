@@ -10,12 +10,7 @@ const router = express.Router();
  */
 
 router.post("/todo", ({ body: { contents } }, res) => {
-  db.Todo.create(
-    { contents },
-    {
-      include: [db.TodoReference]
-    }
-  )
+  db.Todo.create({ contents }, { include: [db.TodoReference] })
     .then(({ dataValues }) => {
       res.json({ message: "등록되었습니다.", data: dataValues, meta: {} });
     })
@@ -33,7 +28,7 @@ router.get(
         size = 5,
         deleted = "0",
         sort = "newest",
-        query = "",
+        keyword = "",
         done
       }
     },
@@ -43,10 +38,10 @@ router.get(
       isDeleted: Number(deleted),
       [Op.or]: [
         {
-          contents: { [Op.like]: `%${query}%` }
+          contents: { [Op.like]: `%${keyword}%` }
         },
         {
-          id: { [Op.like]: `%${query}%` }
+          id: { [Op.like]: `%${keyword}%` }
         }
       ]
     };
