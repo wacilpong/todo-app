@@ -1,5 +1,5 @@
 import React from "react";
-import { Add, TodoWrapper, Search, Backup } from "components";
+import { Add, TodoWrapper, Search, DataSync } from "components";
 import useTodo from "hooks/useTodo";
 
 import "./App.scss";
@@ -17,7 +17,7 @@ function App() {
 
   return (
     <main>
-      <Backup />
+      <DataSync />
 
       <Add getTodoHandler={getTodoHandler} />
 
