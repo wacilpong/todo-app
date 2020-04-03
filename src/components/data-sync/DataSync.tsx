@@ -1,5 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
 import { postCommonRestore } from "services/commonService";
+import { Loader } from "components";
 
 import classnames from "classnames/bind";
 import styles from "./DataSync.module.scss";
@@ -14,27 +15,34 @@ interface IProps {
 
 export default function DataSync({ getTodoHandler }: IProps) {
   const [showRestore, setShowRestore] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const download = () => (window.location.href = BACKUP_API_URL);
 
   const upload = (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
 
-    const file = (event.target.files ?? [])[0];
+    const file = (event.target.files || [])[0];
 
     if (file) {
+      setIsLoading(true);
+
       postCommonRestore(file)
         .then(({ message }) => {
           alert(message);
 
           setShowRestore(false);
+          setIsLoading(false);
           getTodoHandler();
         })
         .catch(({ data: { message } }) => {
+          setIsLoading(false);
           alert(message);
         });
     }
   };
+
+  if (isLoading) return <Loader />
 
   return (
     <>
