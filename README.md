@@ -9,8 +9,8 @@
 ### 설치
 
 ```sh
-git clone https://github.com/wacilpong/kakaoix-todo.git
-cd kakaoix-todo
+git clone https://github.com/wacilpong/todo-app.git
+cd todo-app
 npm i
 ```
 
