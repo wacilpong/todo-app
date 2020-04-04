@@ -9,22 +9,20 @@
 
   .card {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 
-    input.completed {
+    .completed {
       width: 15px;
       height: 15px;
+    }
+
+    .id {
+      margin: 0 6px;
     }
 
     .todo {
       text-align: center;
       flex: 1;
-
-      &::after {
-        content: attr(data-reference);
-        display: block;
-        font-size: 0.75rem;
-      }
 
       input {
         text-align: inherit;
@@ -32,15 +30,46 @@
       }
     }
 
-    .id {
-      margin: 0 6px;
+    .references {
+      font-size: 0.75rem;
+      margin-top: 4px;
     }
+  }
 
-    button {
-      font-weight: bold;
-      font-size: 1.1rem;
-      padding: 0 6px;
-      color: $pink;
+  button.reference-id {
+    position: relative;
+    color: white;
+    text-align: left;
+    background-color: $pink;
+    border-radius: 2px;
+    padding: 2px 6px 3px;
+    margin-right: 4px;
+  }
+
+  button.reference-id:hover {
+    &::after {
+      content: "삭제";
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0, 0, 0, 0.7);
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  button.delete {
+    color: $pink;
+    font-size: 1.1rem;
+    padding: 0 6px;
+    transition: 0.3s;
+
+    &:hover {
+      transform: scale(1.3);
+      transition: 0.3s;
     }
   }
 

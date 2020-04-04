@@ -33,13 +33,13 @@ export default function Todo({
   },
   getTodoHandler
 }: IProps) {
-  const todoReferenceIdText = useMemo(
-    () =>
-      todoReferences.reduce((acc, cur) => `${acc} @${cur.todoReferenceId}`, ""),
+  const todoReferenceIds = useMemo(
+    () => todoReferences.map(({ todoReferenceId }) => todoReferenceId),
     [todoReferences]
   );
 
-  const getDateText = (type: string) => `${formatDateTime(type)} ${formatDateTime(type, "timeStr")}`
+  const getDateText = (type: string) =>
+    `${formatDateTime(type)} ${formatDateTime(type, "timeStr")}`;
 
   const checkValidateTodoReference = useCallback(() => {
     const requests = todoReferences.map(({ todoReferenceId }) =>
@@ -134,7 +134,7 @@ export default function Todo({
           onChange={updateDoneTodo}
         />
         <span className={cx("id")}>{id}</span>
-        <div className={cx("todo")} data-reference={todoReferenceIdText}>
+        <div className={cx("todo")}>
           {isDone ? (
             <s>{contents}</s>
           ) : (
@@ -144,10 +144,22 @@ export default function Todo({
               onBlur={updateContentsTodo}
             />
           )}
+
+          <div className={cx("references")}>
+            {todoReferenceIds.map(id => (
+              <button key={id} type="button" className={cx("reference-id")}>
+                @{id}
+              </button>
+            ))}
+          </div>
         </div>
 
         {!isDeleted && (
-          <button type="button" onClick={deleteThisTodo}>
+          <button
+            type="button"
+            className={cx("delete")}
+            onClick={deleteThisTodo}
+          >
             X
           </button>
         )}
