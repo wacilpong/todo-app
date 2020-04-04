@@ -7,7 +7,10 @@ import React, {
   DragEvent
 } from "react";
 import { getThisTodo, patchTodo, deleteTodo } from "services/todoService";
-import { postTodoReference } from "services/todoReferenceService";
+import {
+  postTodoReference,
+  deleteTodoRefernece
+} from "services/todoReferenceService";
 import formatDateTime from "utils/formatDateTime";
 import { ITodo } from "types";
 
@@ -94,6 +97,19 @@ export default function Todo({
     [id, getTodoHandler]
   );
 
+  const deleteThisTodoRefernece = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+
+      const todoReferenceId = Number(event.currentTarget.value);
+
+      deleteTodoRefernece(id, todoReferenceId).then(() => {
+        getTodoHandler();
+      });
+    },
+    [id, getTodoHandler]
+  );
+
   const handleDragStart = (event: DragEvent<HTMLDivElement>) => {
     event.dataTransfer.setData("text/plain", event.currentTarget.id);
   };
@@ -146,9 +162,15 @@ export default function Todo({
           )}
 
           <div className={cx("references")}>
-            {todoReferenceIds.map(id => (
-              <button key={id} type="button" className={cx("reference-id")}>
-                @{id}
+            {todoReferenceIds.map(referenceId => (
+              <button
+                key={referenceId}
+                type="button"
+                className={cx("reference-id")}
+                value={referenceId}
+                onClick={deleteThisTodoRefernece}
+              >
+                @{referenceId}
               </button>
             ))}
           </div>

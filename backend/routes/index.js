@@ -54,6 +54,7 @@ router.get(
       limit: size,
       offset: size * (page - 1),
       order: [["createdAt", sort === "newest" ? "DESC" : "ASC"]],
+      group: ["todo.id"],
       include: {
         model: db.TodoReference,
         attributes: ["todoReferenceId"]
@@ -61,7 +62,7 @@ router.get(
       where
     })
       .then(({ rows, count }) => {
-        res.json({ data: rows, meta: { totalCount: count } });
+        res.json({ data: rows, meta: { totalCount: count.length } });
       })
       .catch(error => {
         res.status(500).json({ message: error.message });
@@ -159,6 +160,21 @@ router.get("/todo/:id/reference", async ({ params: { id } }, res) => {
   }
 });
 
+router.delete(
+  "/todo/:id/reference/:todoReferenceId",
+  ({ params: { id, todoReferenceId } }, res) => {
+    db.TodoReference.destroy({
+      where: { todoId: id, todoReferenceId }
+    })
+      .then(() => {
+        res.json({ data: {}, meta: {} });
+      })
+      .catch(error => {
+        res.status(500).json({ message: error.message });
+      });
+  }
+);
+
 /*
  * common
  */
@@ -178,14 +194,17 @@ router.post(
   ({ file }, res) => {
     if (file.filename !== "source.db") {
       const fs = require("fs");
-      const removeTarget = `${path.join(__dirname, "..", "db", file.originalname)}`;
+      const removeTarget = `${path.join(
+        __dirname,
+        "..",
+        "db",
+        file.originalname
+      )}`;
 
       fs.unlink(removeTarget, error => {
         if (error) throw error;
 
-        res
-          .status(500)
-          .json({ message: "DB 파일만 복원할 수 있습니다." });
+        res.status(500).json({ message: "DB 파일만 복원할 수 있습니다." });
       });
 
       return;
