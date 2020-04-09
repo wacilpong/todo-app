@@ -88,3 +88,8 @@ npm run start:dev
     -> `@id`형태의 버튼을 누르면 참조 삭제되도록 처리
 
 15. 백업파일 복원 시 유저의 UI 동작을 막도록 로딩 컴포넌트 구현
+
+<br />
+
+### Example
+![2020-04-09 16-22-39 2020-04-09 19_58_11](https://user-images.githubusercontent.com/27843313/78888842-6e777c80-7a9d-11ea-87e9-1930f9ba1cb3.gif)
