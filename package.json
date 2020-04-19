@@ -1,5 +1,5 @@
 {
-  "name": "kakaoix-todo",
+  "name": "todo-app",
   "version": "0.1.0",
   "private": true,
   "proxy": "http://localhost:55555",
