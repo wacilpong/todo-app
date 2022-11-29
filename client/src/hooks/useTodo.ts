@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getTodo } from "services/todoService";
 import { ITodo, ITodoQueryJson } from "types";
 import qs from "qs";
@@ -7,24 +7,23 @@ import qs from "qs";
 const rowSize = 5;
 
 export default function useTodo() {
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [todoList, setTodoList] = useState<ITodo[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
 
   const qsJson: ITodoQueryJson = useMemo(
-    () => qs.parse(history.location.search, { ignoreQueryPrefix: true }),
-    [history.location.search]
+    () => qs.parse(location.search, { ignoreQueryPrefix: true }),
+    [location]
   );
 
   const currentPage = useMemo(() => Number(qsJson.page || 1), [qsJson]);
 
   const handlePage = useCallback(
     (page: number) => {
-      history.push(
-        `${history.location.pathname}?${qs.stringify({ ...qsJson, page })}`
-      );
+      navigate(`${location.pathname}?${qs.stringify({ ...qsJson, page })}`);
     },
-    [history, qsJson]
+    [navigate, location, qsJson]
   );
 
   const getTodoHandler = useCallback(() => {
@@ -43,6 +42,6 @@ export default function useTodo() {
     totalCount,
     currentPage,
     handlePage,
-    getTodoHandler
+    getTodoHandler,
   };
 }

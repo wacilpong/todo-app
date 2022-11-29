@@ -7,7 +7,7 @@ import styles from "./DataSync.module.scss";
 
 const cx = classnames.bind(styles);
 
-const BACKUP_API_URL = "http://localhost:55555/api/common/backup";
+const BACKUP_API_URL = "http://localhost:3777/api/common/backup";
 
 interface IProps {
   getTodoHandler: () => void;
@@ -42,7 +42,7 @@ export default function DataSync({ getTodoHandler }: IProps) {
     }
   };
 
-  if (isLoading) return <Loader />
+  if (isLoading) return <Loader />;
 
   return (
     <>
