@@ -1,0 +1,51 @@
+{
+  "name": "todo-app",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:3777",
+  "scripts": {
+    "start:dev": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --watchAll",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/jest": "^29.2.3",
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "axios": "^1.2.0",
+    "classnames": "^2.3.2",
+    "node-sass": "^8.0.0",
+    "qs": "^6.11.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.3",
+    "react-scripts": "^5.0.1",
+    "typescript": "^4.9.3"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/classnames": "^2.3.1",
+    "@types/qs": "^6.9.7",
+    "@types/react-router-dom": "^5.3.3"
+  }
+}

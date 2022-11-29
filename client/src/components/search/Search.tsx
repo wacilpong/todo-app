@@ -3,9 +3,9 @@ import React, {
   useCallback,
   useEffect,
   ChangeEvent,
-  KeyboardEvent
+  KeyboardEvent,
 } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import qs from "qs";
 
 import classnames from "classnames/bind";
@@ -19,22 +19,23 @@ enum SearchKey {
   keyword = "keyword",
   done = "done",
   deleted = "deleted",
-  sort = "sort"
+  sort = "sort",
 }
 
 export default function Search() {
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchKey, setSearchKey] = useState<SearchKey>();
   const [searchParams, setSearchParams] = useState<Indexable>({});
 
   const setQueryJson = useCallback(
     () =>
-      history.push(
-        `${history.location.pathname}?${qs.stringify({
-          ...searchParams
+      navigate(
+        `${location.pathname}?${qs.stringify({
+          ...searchParams,
         })}`
       ),
-    [history, searchParams]
+    [navigate, location, searchParams]
   );
 
   const setSearchParamsHandler = useCallback(
@@ -47,7 +48,7 @@ export default function Search() {
       if (value) {
         setSearchParams({
           ...searchParams,
-          [key]: value
+          [key]: value,
         });
       } else {
         const nextState = { ...searchParams };

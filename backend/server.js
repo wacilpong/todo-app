@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const api = require("./routes/index");
 
 const app = express();
-const port = 55555;
+const port = 3777;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
